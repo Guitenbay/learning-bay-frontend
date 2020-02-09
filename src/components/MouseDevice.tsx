@@ -33,7 +33,7 @@ const styles = {
     zIndex: 445,
     pointerEvents: 'none',
     backfaceVisibility: 'hidden',
-    '-webkit-backface-visibility': 'hidden',
+    WebkitBackfaceVisibility: 'hidden',
   },
   PointerBody: {
     transition: 'opacity .1s ease-out',
