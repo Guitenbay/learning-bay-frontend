@@ -3,11 +3,11 @@ import './Video.css';
 import MonacoEditor from 'react-monaco-editor';
 import Axios from 'axios';
 import MouseDevice from '../../components/MouseDevice';
-import { IMoveData } from '../../vdata/data1';
-import { IMouseEventData } from '../../vdata/data2';
 import { imitateMouseEvent } from '../../utils/methods'
-import { IFrame } from '../frame.d';
+import { IEditorFrame } from '../frame.d';
 import { baseURL } from '../config'
+import Sidebar from '../../components/Sidebar';
+import { Directory, Depandency } from '../../components/sidebar.d';
 
 interface IState {
   play: boolean,
@@ -15,10 +15,24 @@ interface IState {
   position: { x: number, y: number }
 }
 
+const dirs: Array<Directory> = [{
+  name: 'src',
+  files: [
+    { name: 'index.html', icon: 'html' },
+    { name: 'index.js', icon: 'js' },
+  ]
+}]
+
+const depandencies: Array<Depandency> = [
+  { name: 'react' },
+  { name: 'react-dom' },
+]
+
 class Video extends React.Component<{}, IState> {
   private editorRef: RefObject<MonacoEditor> = createRef<MonacoEditor>();
-  private editorData: Array<IFrame> = [];
+  private editorData: Array<IEditorFrame> = [];
   private intervalHandler: NodeJS.Timeout | undefined = undefined;
+  private initPos = {x: 0, y: 0};
   private currentTime = 0;
   constructor(props: {}) {
     super(props);
@@ -35,35 +49,24 @@ class Video extends React.Component<{}, IState> {
   componentDidUpdate(prevProps:{}, prevState: IState) {
     // play => true
     if (this.state.play && !prevState.play) {
-      // focus
       this.intervalHandler = setInterval(() => {
         if (this.editorData.length <= 0) {
           clearInterval(this.intervalHandler as NodeJS.Timeout);
           return;
         };
+        // focus
         this.editorRef.current?.editor?.focus();
         const currentData = this.editorData.shift();
-        if ((currentData as IFrame).index === this.currentTime) {
-          this.editorRef.current?.editor?.setValue((currentData as IFrame).modelValue);
-          this.editorRef.current?.editor?.restoreViewState((currentData as IFrame).viewState);
+        if ((currentData as IEditorFrame).index === this.currentTime) {
+          const { x, y } = (currentData as IEditorFrame).mouseMove;
+          this.setState({ position: { x: this.initPos.x + x, y: this.initPos.y + y }});
+          (currentData as IEditorFrame).mouseEvents.forEach(({x, y, element, event}) => {
+            imitateMouseEvent(document.querySelector(element) as HTMLElement, event, x, y);
+          })
+          this.editorRef.current?.editor?.setValue((currentData as IEditorFrame).modelValue);
+          this.editorRef.current?.editor?.restoreViewState((currentData as IEditorFrame).viewState);
         }
         this.currentTime++;
-        // if (currentData?.type === "move") {
-        //   const { time, x, y } = currentData as IMoveData;
-        //   if (currentTime === time) {
-        //     currentTime++;
-        //     this.setState({ position: { x, y }});
-        //   }
-        //   return;
-        // }
-        // if (currentData?.type === "mouse-event") {
-        //   const { time, element, event, x, y } = currentData as IMouseEventData;
-        //   if (currentTime === time) {
-        //     currentTime++;
-        //     imitateMouseEvent(document.querySelector(element) as Element, event, x, y);
-        //   }
-        //   return;
-        // }
       }, 1000);
     }
     // play => false
@@ -73,27 +76,29 @@ class Video extends React.Component<{}, IState> {
   }
   async getVideoEditorData() {
     const resp = await Axios.get(`${baseURL}/video/1.mmcv`);
-    const rawData = resp.data as string;
-    const editorData = rawData.split('\r\n').map(data => {
-      if (data.length > 0) {
-        return JSON.parse(data);
-      } else {
-        return [];
-      }
-    }).flat(1);
+    const rawData = resp.data;
+    let editorData: Array<IEditorFrame> = [];
+    if (Array.isArray(rawData)) {
+      editorData = rawData;
+    } else {
+      editorData = (rawData as string).split('\r\n').map((data: string) => {
+        if (data.length > 0) {
+          return JSON.parse(data);
+        } else {
+          return [];
+        }
+      }).flat(1);
+    }
     return editorData.sort((former, latter) => (former.index - latter.index));
   }
   componentDidMount() {
+    const playArea: HTMLElement = document.querySelector('#play-area') as HTMLElement;
+    this.initPos.x = playArea.offsetLeft;
+    this.initPos.y = playArea.offsetTop;
     this.getVideoEditorData().then(data => {
-      console.log(data);
       this.editorData = data;
     }).catch(err => console.error(err));
   }
-  // editorDidMount(editor: monacoEditor.editor.IStandaloneCodeEditor, monaco: typeof monacoEditor) {
-  //   // editor.setValue(data.value);
-  //   // editor.restoreViewState(data.viewstate);
-  //   editor.focus();
-  // }
   render() {
     const code = this.state.code;
     const position = this.state.position;
@@ -102,18 +107,20 @@ class Video extends React.Component<{}, IState> {
     };
     return (
       <Fragment>
-        <MouseDevice x={position.x} y={position.y} />
         <button onClick={this.handlePlayClick}>Play</button>
-        <MonacoEditor
-          ref={this.editorRef}
-          width="800"
-          height="600"
-          language="javascript"
-          theme="vs-dark"
-          value={code}
-          options={options}
-          // editorDidMount={this.editorDidMount.bind(this)}
-        />
+        <div id="play-area">
+          <MouseDevice x={position.x} y={position.y} />
+          <Sidebar title="Project" dirs={dirs} depandencies={depandencies} />
+          <MonacoEditor
+            ref={this.editorRef}
+            width="800"
+            height="600"
+            language="javascript"
+            theme="vs-dark"
+            value={code}
+            options={options}
+          />
+        </div>
       </Fragment>
     );
   }

@@ -1,6 +1,7 @@
 import React from 'react'
 
 interface IProps {
+  index: number,
   name: string,
   icon?: string
 }
@@ -13,9 +14,9 @@ class SidebarEntry extends React.Component<IProps> {
     }
     return (
       <div className="SidebarEntry Entry FileEntry">
-        <div className="EntryHead head" draggable="true" data-sref="-10$2">
+        <div className="EntryHead head" draggable="true">
           { icon }
-          <div className="name">{ this.props.name }</div>
+          <div className="name" id={ `Entry-${this.props.name}-${this.props.index}` }>{ this.props.name }</div>
         </div>
       </div>
     );

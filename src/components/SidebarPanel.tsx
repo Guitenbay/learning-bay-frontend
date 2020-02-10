@@ -17,11 +17,11 @@ class SidebarPanel extends React.Component<IProps> {
         <div className="SidebarEntry Entry DirEntry RootEntry main expanded" key={dir.name+'-'+index}>
           <div className="EntryHead head" draggable="true">
             <i className="icon folder toggler"></i>
-            <div className="name">{dir.name}</div>
+            <div className="name" id={ `Panel-dir-${dir.name}` }>{dir.name}</div>
           </div>
           <div className="body l0">
             { (dir as Directory).files.map(({ name, icon }, index) => (
-              <SidebarEntry name={name} icon={icon} key={name+'-'+index} />
+              <SidebarEntry index={index} name={name} icon={icon} key={name+'-'+index} />
             )) }
           </div>
         </div>
@@ -30,7 +30,7 @@ class SidebarPanel extends React.Component<IProps> {
       entries = <div className="SidebarEntry Entry DirEntry RootEntry main expanded">
         <div className="body l0">
           { this.props.entries.map((depandancy, index) => (
-            <SidebarEntry name={depandancy.name} key={depandancy.name+'-'+index} />
+            <SidebarEntry index={index} name={depandancy.name} key={depandancy.name+'-'+index} />
           )) }
         </div>
       </div>
@@ -38,7 +38,7 @@ class SidebarPanel extends React.Component<IProps> {
     return (
       <div className="SidebarPanel">
         <header className="header">
-          <div className="title">{ this.props.title }</div>
+          <div className="title" id={ `Panel-${this.props.title}` }>{ this.props.title }</div>
           <div className="tools">
             <div className="tool" data-icon="mcog"></div>
           </div>

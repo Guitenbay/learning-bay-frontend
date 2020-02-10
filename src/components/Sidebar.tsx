@@ -13,7 +13,7 @@ class Sidebar extends React.Component<IProps> {
     return (
       <div className="main">
         <header className="header">
-          <div className="title">{ this.props.title }</div>
+          <div className="title" id={ `Sidebar-${ this.props.title }` }>{ this.props.title }</div>
           <div className="tool cog" data-icon="mcog"></div>
         </header>
         <SidebarPanel title="files" type="directory" entries={this.props.dirs} />
