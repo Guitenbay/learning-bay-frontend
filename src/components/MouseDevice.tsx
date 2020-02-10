@@ -34,6 +34,10 @@ const styles = {
     pointerEvents: 'none',
     backfaceVisibility: 'hidden',
     WebkitBackfaceVisibility: 'hidden',
+    transition: 'transform 0.2s',
+    MozTransition: 'transform 0.2s', /* Firefox 4 */
+    WebkitTransition: 'transform 0.2s', /* Safari 和 Chrome */
+    OTransition: 'transform 0.2s', /* Opera */
   },
   PointerBody: {
     transition: 'opacity .1s ease-out',

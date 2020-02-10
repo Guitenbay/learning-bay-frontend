@@ -1,5 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { HashRouter, Route, Link, Switch, Redirect } from 'react-router-dom'
+import Home from './home/Home';
 import Video from './video/Video';
 import Record from './record/Record';
 import Layout from '../components/Layout';
@@ -13,6 +14,9 @@ const App: FunctionComponent = () => (
           <nav>
             <li>
               <Link to="/">Home</Link>
+            </li>
+            <li>
+              <Link to="/play">Play</Link>
             </li>
             <li>
               <Link to="/record">Record</Link>
@@ -30,7 +34,10 @@ const App: FunctionComponent = () => (
         */}
         <Switch>
           <Route exact path="/">
-            <Video /> 
+            <Home />
+          </Route>
+          <Route path="/play">
+            <Video />
           </Route>
           <Route path="/record">
             <Record />
