@@ -1,9 +1,10 @@
 import React, { FunctionComponent } from 'react';
 import { HashRouter, Route, Link, Switch, Redirect } from 'react-router-dom'
+import Layout from '../components/Layout';
 import Home from './home/Home';
 import Video from './video/Video';
 import Record from './record/Record';
-import Layout from '../components/Layout';
+import Code from './code/Code';
 
 const App: FunctionComponent = () => (
   <Layout>
@@ -41,6 +42,9 @@ const App: FunctionComponent = () => (
           </Route>
           <Route path="/record">
             <Record />
+          </Route>
+          <Route path="/code">
+            <Code />
           </Route>
           <Route path="/error">
             <div>404 Oops...</div>

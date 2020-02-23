@@ -5,8 +5,9 @@ class Home extends React.Component {
   render() {
     return (
       <Fragment>
-        <div><Link to="/record">Play</Link></div>
+        <div><Link to="/play">Play</Link></div>
         <div><Link to="/record">Record</Link></div>
+        <div><Link to="/code">Code</Link></div>
       </Fragment>
     )
   }

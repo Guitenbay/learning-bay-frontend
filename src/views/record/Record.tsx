@@ -85,7 +85,6 @@ class Record extends React.Component<{}, IState> {
       viewState: this.editorRef.current?.editor?.saveViewState(),
       modelValue: this.editorRef.current?.editor?.getValue()
     });
-    // console.log(frame);
     this.cacheFrames.push(frame as IEditorFrame)
     
     this.currentTime++;
@@ -138,7 +137,6 @@ class Record extends React.Component<{}, IState> {
             console.log('上传失败');
             // TODO: 转入上传失败函数处理
           }
-          // else clearInterval(this.intervalHandler as NodeJS.Timeout);
         }).catch(err => {
           console.error(err);
         });

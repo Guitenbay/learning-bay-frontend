@@ -94,7 +94,6 @@ class Video extends React.Component<{}, IState> {
   componentDidMount() {
     this.playArea = document.querySelector('#play-area') as HTMLElement;
     this.getVideoEditorData().then(data => {
-      console.log(data);
       this.editorData = data;
     }).catch(err => console.error(err));
   }
