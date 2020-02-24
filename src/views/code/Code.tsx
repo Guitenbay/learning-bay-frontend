@@ -2,6 +2,7 @@ import React, { Fragment, RefObject, createRef } from 'react';
 import MonacoEditor from 'react-monaco-editor';
 import Axios from 'axios';
 import { baseURL } from '../config';
+import Footer from '../../components/Footer';
 
 class Code extends React.Component {
   private editorRef: RefObject<MonacoEditor> = createRef<MonacoEditor>();
@@ -18,7 +19,9 @@ class Code extends React.Component {
   }
   render() {
     const options = {
-      selectOnLineNumbers: true
+      minimap: { enabled: false },
+      scrollbar: { verticalScrollbarSize: 0, verticalSliderSize: 14, 
+        horizontalScrollbarSize: 0, horizontalSliderSize: 14 }
     };
     return (
       <Fragment>
@@ -31,6 +34,7 @@ class Code extends React.Component {
           theme="vs-dark"
           options={options}
         />
+        <Footer />
       </Fragment>
     )
   }

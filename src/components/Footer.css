@@ -1,0 +1,22 @@
+footer {
+  padding: var(--page-padding);
+  padding-top: 0;
+}
+
+footer > div {
+  margin: 0 auto;
+  max-width: var(--main-width);
+  padding-bottom: var(--page-padding);
+}
+
+footer a {
+  padding: 15px 1.5ex;
+}
+
+footer .grid {
+  /* margin: 0 5px; */
+  display: grid;
+  padding-top: var(--page-padding);
+  grid-template-columns: repeat(3, 1fr);
+  grid-column-gap: 20px;
+}

@@ -8,6 +8,7 @@ import { IEditorFrame } from '../frame.d';
 import { baseURL } from '../config'
 import Sidebar from '../../components/Sidebar';
 import { Directory, Depandency } from '../../components/sidebar.d';
+import Footer from '../../components/Footer';
 
 interface IState {
   play: boolean,
@@ -100,7 +101,9 @@ class Video extends React.Component<{}, IState> {
   render() {
     const position = this.state.position;
     const options = {
-      selectOnLineNumbers: true
+      minimap: { enabled: false },
+      scrollbar: { verticalScrollbarSize: 0, verticalSliderSize: 15, 
+        horizontalScrollbarSize: 0, horizontalSliderSize: 15 }
     };
     return (
       <Fragment>
@@ -117,6 +120,7 @@ class Video extends React.Component<{}, IState> {
             options={options}
           />
         </div>
+        <Footer />
       </Fragment>
     );
   }

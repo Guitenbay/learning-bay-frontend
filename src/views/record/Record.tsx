@@ -148,7 +148,9 @@ class Record extends React.Component<{}, IState> {
   }
   render() {
     const options = {
-      selectOnLineNumbers: true
+      minimap: { enabled: false },
+      scrollbar: { verticalScrollbarSize: 0, verticalSliderSize: 15, 
+        horizontalScrollbarSize: 0, horizontalSliderSize: 15 }
     };
     return (
       <Fragment>
