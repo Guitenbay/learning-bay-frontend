@@ -6,6 +6,8 @@
 :root {
   --page-padding: 48px;
   --main-width: 1192px;
+  --sidebar-width: 200px;
+  --titlebar-height: 40px;
 }
 /* Color */
 :root {
@@ -14,7 +16,8 @@
   --uxa-link-color: #4a95eb;
   --uxa-link-hover-color: #327acc;
 }
-
+/* -----------Root End------------- */
+/* -----------Theme Start------------ */
 a { color: var(--uxa-link-color); }
 a:hover { color: var(--uxa-link-hover-color) }
 
@@ -31,19 +34,81 @@ article {
 }
 
 #root > div,
-.Page, 
+.Page,
+article, 
 footer {
   background-color: var(--light-bg-color);
 }
 
 #root > div.bp3-dark,
 .bp3-dark .Page, 
+.bp3-dark article, 
 .bp3-dark footer {
   background-color: var(--dark-bg-color);
 }
-
-/* -----------Basic------------ */
-
+/* -----------Theme end------------ */
+.flex { display: flex; }
+.flex.vertical { flex-direction: column; }
+.flex > .none { flex: none; }
+.flex > .auto { flex: auto; }
+/* -----------Editor View Start------------ */
+.SidebarView {
+  width: var(--sidebar-width);
+  min-width: var(--sidebar-width);
+  max-width: var(--sidebar-width);
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.EditorView {
+  position: absolute;
+  width: auto;
+  left: var(--sidebar-width);
+  /* top: var(--titlebar-height); */
+}
+.PaneView {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  left: var(--sidebar-width);
+  width: auto;
+  height: 30%;
+  min-height: 110px;
+  transform: translate3d(0,-31px,0);
+  transition: transform .2s cubic-bezier(.19,1,.22,1);
+}
+.PaneView.open {
+  transform: translate3d(0,-100%,0);
+}
+.InterfaceView { pointer-events: none; }
+.InterfaceView.MarkView {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  -ms-flex-align: center;
+  align-items: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  z-index: 650;
+  pointer-events: none;
+}
+.InterfaceView.MarkView > *{
+  pointer-events: auto;
+}
+.InterfaceView.MarkView.hidden {
+  display: none;
+}
+.InterfaceView.AudioView {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 610;
+}
+/* -----------Editor View End------------ */
+/* -----------Basic start------------ */
 html, body, #root, #root > div {
   width: 100%;
   height: 100%;
@@ -61,6 +126,5 @@ body {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }

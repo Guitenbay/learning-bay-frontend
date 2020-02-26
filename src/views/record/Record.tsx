@@ -1,6 +1,7 @@
-import React, { createRef, RefObject, Fragment } from 'react';
-import axios from 'axios';
+import React, { createRef, RefObject } from 'react';
 import { Base64 } from 'js-base64';
+import { ResizeSensor, IResizeEntry } from '@blueprintjs/core';
+import { ReactMic, ReactMicStopEvent } from 'react-mic';
 import './Record.css';
 import MonacoEditor from 'react-monaco-editor';
 import Sidebar from '../../components/Sidebar';
@@ -8,10 +9,12 @@ import { Directory, Depandency } from '../../components/sidebar.d';
 import { IEditorFrame } from '../frame.d';
 import { baseURL } from '../config'
 import { IMouseEventData, IMouseMoveData } from '../frame.d';
+import { blobPost } from '../../utils/blob-ajax';
 
 interface IState {
   title: string,
-  record: boolean
+  record: boolean,
+  monacoSize: { width: string, height: string }
 }
 
 const CACHE_SIZE = 10;
@@ -41,10 +44,9 @@ class Record extends React.Component<{}, IState> {
     super(props);
     this.state = {
       title: 'undefined',
-      record: false
+      record: false,
+      monacoSize: { width: '100%', height: '100%' }
     }
-    this.handleRecordClick = this.handleRecordClick.bind(this);
-    this.recordFrame = this.recordFrame.bind(this)
   }
   setListeners() {
     const recordArea: HTMLElement = document.querySelector<HTMLElement>('#record-area') as HTMLElement;
@@ -71,13 +73,11 @@ class Record extends React.Component<{}, IState> {
   async uploadEditorFrame(frames: Array<IEditorFrame>) {
     const data = Base64.encode(JSON.stringify(frames));
     const blob = new Blob([data], {type : 'application/octet-stream'});
-    const resp = await axios.post(`${baseURL}/video/1.mmcv`, blob);
-    return resp.data;
+    // const resp = await axios.post(`${baseURL}/video/1.mmcv`, blob);
+    const resp = await blobPost(`${baseURL}/video/1.mmcv`, blob);
+    return resp;
   }
-  handleRecordClick() {
-    this.setState({ record: !this.state.record });
-  }
-  recordFrame() {
+  recordFrame = () => {
     const frame = Object.assign({}, {
       index: this.currentTime,
       mouseMove: this.currentMousePos,
@@ -103,20 +103,23 @@ class Record extends React.Component<{}, IState> {
         if (this.cacheFrames.length >= CACHE_SIZE) {
           this.uploadChunks.push(this.cacheFrames);
           this.cacheFrames = [];
-          this.uploadEditorFrame(this.uploadChunks[0]).then(({ res }) => {
-            if (!res) {
+          this.uploadEditorFrame(this.uploadChunks[0]).then(
+            // resp => console.log(resp)
+            ({ res }) => {
+              if (!res) {
+                this.setState({ record: false });
+                console.log('上传失败');
+                // TODO: 转入上传失败函数处理
+              } else {
+                this.uploadChunks.shift();
+                console.log('上传成功');
+              }
+              // else clearInterval(this.intervalHandler as NodeJS.Timeout);
+            }).catch(err => {
               this.setState({ record: false });
-              console.log('上传失败');
-              // TODO: 转入上传失败函数处理
-            } else {
-              this.uploadChunks.shift();
-              console.log('上传成功');
+              console.error(err);
             }
-            // else clearInterval(this.intervalHandler as NodeJS.Timeout);
-          }).catch(err => {
-            this.setState({ record: false });
-            console.error(err);
-          });
+          );
         }
       }, 1000);
     }
@@ -129,22 +132,45 @@ class Record extends React.Component<{}, IState> {
       if (this.cacheFrames.length > 0) {
         this.uploadChunks.push(this.cacheFrames);
         this.cacheFrames = [];
-        this.uploadEditorFrame(this.uploadChunks[0]).then(({ res }) => {
-          if (res) {
-            console.log('上传成功');
-            this.uploadChunks.shift();
-          } else {
-            console.log('上传失败');
-            // TODO: 转入上传失败函数处理
+        this.uploadEditorFrame(this.uploadChunks[0]).then(
+          // resp => console.log(resp)
+          ({ res }) => {
+            if (res) {
+              console.log('上传成功');
+              this.uploadChunks.shift();
+            } else {
+              console.log('上传失败');
+              // TODO: 转入上传失败函数处理
+            }
+          }).catch(err => {
+            console.error(err);
           }
-        }).catch(err => {
-          console.error(err);
-        });
+        );
       }
     }
   }
   componentDidMount() {
     this.setListeners();
+  }
+  handleResizeMonacoEditor = (entries: IResizeEntry[]) => {
+    // console.log(entries);
+    const e = entries[0] as IResizeEntry;
+    const sidebar = document.querySelector('.SidebarView');
+    let width = e.contentRect.width
+    if (sidebar !== null) {
+      width -= (sidebar as HTMLElement).offsetWidth;
+    }
+    const height = e.contentRect.height;
+    this.setState({ monacoSize: {width: `${width}`, height: `${height}`} });
+  }
+  handleRecordClick = () => {
+    this.setState({ record: !this.state.record });
+  }
+  onData(recordedBlob: Blob) {
+    console.log('chunk of real-time data is: ', recordedBlob);
+  }
+  onStop(recordedBlob: ReactMicStopEvent) {
+    console.log('recordedBlob is: ', recordedBlob);
   }
   render() {
     const options = {
@@ -152,21 +178,45 @@ class Record extends React.Component<{}, IState> {
       scrollbar: { verticalScrollbarSize: 0, verticalSliderSize: 15, 
         horizontalScrollbarSize: 0, horizontalSliderSize: 15 }
     };
+    const { width, height } = this.state.monacoSize;
     return (
-      <Fragment>
-        <button onClick={this.handleRecordClick}>Record</button>
-        <div id="record-area">
-          <Sidebar title="Project" dirs={dirs} depandencies={depandencies} />
-          <MonacoEditor
-            ref={this.editorRef}
-            width="100%"
-            height="600"
-            language="javascript"
-            theme="vs-dark"
-            options={options}
-          />
+      <div className="flex vertical" style={{width: '100%', height: '100%', overflow: "hidden"}}>
+        <div className="auto">
+          <ResizeSensor onResize={this.handleResizeMonacoEditor}>
+            <div id="record-area" style={{width: '100%', height: '100%'}}>
+              <div className="SidebarView">
+                <Sidebar title="Project" dirs={dirs} depandencies={depandencies} />
+              </div>
+              <div className="EditorView">
+                <MonacoEditor
+                  ref={this.editorRef}
+                  width={width}
+                  height={height}
+                  language="javascript"
+                  theme="vs-dark"
+                  options={options}
+                  />
+              </div>
+              <div className="PaneView">
+
+              </div>
+              <div className="InterfaceView MarkView">
+                <button className="none" onClick={this.handleRecordClick}>Record</button>
+              </div>
+              <div className="InterfaceView AudioView">
+                <ReactMic
+                  record={this.state.record}
+                  className="sound-wave"
+                  onStop={this.onStop}
+                  onData={this.onData}
+                  strokeColor="#000000"
+                  backgroundColor="#FF4081" />
+              </div>
+            </div>
+          </ResizeSensor>
         </div>
-      </Fragment>
+        <div className="none">2333</div>
+      </div>
     );
   }
 }

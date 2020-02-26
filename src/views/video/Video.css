@@ -1,3 +1,4 @@
 #play-area {
-  max-width: 100%;
+  position: relative;
+  overflow: hidden;
 }
