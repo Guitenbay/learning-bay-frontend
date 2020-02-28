@@ -2,3 +2,8 @@
   position: relative;
   overflow: hidden;
 }
+
+.audio, audio {
+  width: 100%;
+  height: var(--audio-height);
+}

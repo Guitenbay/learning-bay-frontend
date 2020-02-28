@@ -98,54 +98,44 @@ class Record extends React.Component<{}, IState> {
     if (this.state.record && typeof this.editorRef.current?.editor !== 'undefined' 
       && !prevState.record) {
       requestAnimationFrame(this.recordFrame);
-      // 每隔 10s 上传数据
+      // 每隔 1s 上传数据
       this.intervalHandler = setInterval(() => {
         if (this.cacheFrames.length >= CACHE_SIZE) {
           this.uploadChunks.push(this.cacheFrames);
           this.cacheFrames = [];
-          this.uploadEditorFrame(this.uploadChunks[0]).then(
-            // resp => console.log(resp)
-            ({ res }) => {
-              if (!res) {
-                this.setState({ record: false });
-                console.log('上传失败');
-                // TODO: 转入上传失败函数处理
-              } else {
-                this.uploadChunks.shift();
-                console.log('上传成功');
-              }
-              // else clearInterval(this.intervalHandler as NodeJS.Timeout);
-            }).catch(err => {
+          this.uploadEditorFrame(this.uploadChunks[0]).then(({ res }) => {
+            if (!res) {
               this.setState({ record: false });
-              console.error(err);
+              console.log('上传失败');
+              // TODO: 转入上传失败函数处理
+            } else {
+              this.uploadChunks.shift();
+              console.log('上传成功');
             }
-          );
+          }).catch(err => {
+            this.setState({ record: false });
+            console.error(err);
+          });
         }
       }, 1000);
     }
     // record => false
     if (!this.state.record && prevState.record) {
       if (typeof this.intervalHandler !== 'undefined') {
-        clearInterval(this.intervalHandler);
-        this.intervalHandler = undefined;
+        clearInterval(this.intervalHandler); this.intervalHandler = undefined; 
       }
       if (this.cacheFrames.length > 0) {
         this.uploadChunks.push(this.cacheFrames);
         this.cacheFrames = [];
-        this.uploadEditorFrame(this.uploadChunks[0]).then(
-          // resp => console.log(resp)
-          ({ res }) => {
-            if (res) {
-              console.log('上传成功');
-              this.uploadChunks.shift();
-            } else {
-              console.log('上传失败');
-              // TODO: 转入上传失败函数处理
-            }
-          }).catch(err => {
-            console.error(err);
+        this.uploadEditorFrame(this.uploadChunks[0]).then(({ res }) => {
+          if (res) {
+            console.log('上传成功');
+            this.uploadChunks.shift();
+          } else {
+            console.log('上传失败');
+            // TODO: 转入上传失败函数处理
           }
-        );
+        }).catch(err => console.error(err));
       }
     }
   }
@@ -166,11 +156,19 @@ class Record extends React.Component<{}, IState> {
   handleRecordClick = () => {
     this.setState({ record: !this.state.record });
   }
-  onData(recordedBlob: Blob) {
-    console.log('chunk of real-time data is: ', recordedBlob);
-  }
+  // onData(recordedBlob: Blob) {
+  //   console.log('chunk of real-time data is: ', recordedBlob);
+  // }
   onStop(recordedBlob: ReactMicStopEvent) {
-    console.log('recordedBlob is: ', recordedBlob);
+    // console.log('recordedBlob is: ', recordedBlob);
+    blobPost(`${baseURL}/audio/1.webm`, recordedBlob.blob).then(({ res }) => {
+      if (res) {
+        console.log('上传音频成功');
+      } else {
+        console.log('上传音频失败');
+        // TODO: 转入上传失败函数处理
+      }
+    }).catch(err => console.error(err));
   }
   render() {
     const options = {
@@ -208,7 +206,6 @@ class Record extends React.Component<{}, IState> {
                   record={this.state.record}
                   className="sound-wave"
                   onStop={this.onStop}
-                  onData={this.onData}
                   strokeColor="#000000"
                   backgroundColor="#FF4081" />
               </div>

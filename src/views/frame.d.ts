@@ -15,6 +15,7 @@ export interface IMouseEventData {
 }
 
 export interface IEditorFrame {
+  time?: number,
   index: number,
   mouseMove: IMouseMoveData,
   mouseEvents: Array<IMouseEventData>,

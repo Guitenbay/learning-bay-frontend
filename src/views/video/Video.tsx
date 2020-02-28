@@ -2,6 +2,7 @@ import React, { createRef, RefObject, Fragment } from 'react';
 import { ResizeSensor, IResizeEntry } from '@blueprintjs/core';
 import MonacoEditor from 'react-monaco-editor';
 // import Axios from 'axios';
+import lodash from 'lodash';
 import './Video.css';
 import MouseDevice from '../../components/MouseDevice';
 import { imitateMouseEvent } from '../../utils/methods'
@@ -14,6 +15,7 @@ import { blobGet } from '../../utils/blob-ajax';
 
 interface IState {
   play: boolean,
+  audioUrl: string,
   position: { x: number, y: number },
   monacoSize: { width: string, height: string }
 }
@@ -33,6 +35,8 @@ const depandencies: Array<Depandency> = [
 
 class Video extends React.Component<{}, IState> {
   private editorRef: RefObject<MonacoEditor> = createRef<MonacoEditor>();
+  // private audioRef: RefObject<ReactPlayer> = createRef<ReactPlayer>();
+  private audioElement: HTMLAudioElement | undefined = undefined;
   private editorData: Array<IEditorFrame> = [];
   private playArea: HTMLElement | undefined = undefined;
   private currentTime = 0;
@@ -40,14 +44,12 @@ class Video extends React.Component<{}, IState> {
     super(props);
     this.state = {
       play: false,
+      audioUrl: "",
       position: { x: 0, y: 0 },
       monacoSize: { width: '100%', height: '100%' }
     }
-    this.playFrame = this.playFrame.bind(this);
-    this.handlePlayClick = this.handlePlayClick.bind(this);
-    this.handleResizeMonacoEditor = this.handleResizeMonacoEditor.bind(this);
   }
-  playFrame() {
+  playFrame = () => {
     if (this.editorData.length <= this.currentTime) {
       this.setState({ play: false });
       return;
@@ -56,7 +58,7 @@ class Video extends React.Component<{}, IState> {
     this.editorRef.current?.editor?.focus();
     const currentData = this.editorData[this.currentTime];
     if ((currentData as IEditorFrame).index === this.currentTime) {
-      const initPos = {x:0, y:0};
+      const initPos = { x:0, y:0 };
       initPos.x = (this.playArea as HTMLElement).offsetLeft;
       initPos.y = (this.playArea as HTMLElement).offsetTop;
       const { x, y } = (currentData as IEditorFrame).mouseMove;
@@ -75,6 +77,11 @@ class Video extends React.Component<{}, IState> {
     // play => true
     if (this.state.play && !prevState.play) {
       requestAnimationFrame(this.playFrame);
+      this.audioElement?.play();
+    }
+    // play => false
+    if (!this.state.play && !prevState.play) {
+      this.audioElement?.pause();
     }
   }
   async getVideoEditorData() {
@@ -86,22 +93,43 @@ class Video extends React.Component<{}, IState> {
       editorData = rawData;
     } else {
       editorData = (rawData as string).split('\r\n').map((data: string) => {
-        if (data.length > 0) {
-          return JSON.parse(data);
-        } else {
-          return [];
-        }
+        if (data.length > 0) return JSON.parse(data);
+        else return [];
       }).flat(1);
     }
     return editorData.sort((former, latter) => (former.index - latter.index));
   }
-  componentDidMount() {
-    this.playArea = document.querySelector('#play-area') as HTMLElement;
-    this.getVideoEditorData().then(data => {
+  async getAudioURL() {
+    // const mimeType = 'text/plain';
+    // console.log('MediaSource' in window);
+    // console.log(MediaSource.isTypeSupported(mimeType));
+    // if ('MediaSource' in window) {
+    //   const mediasource = new MediaSource();
+    //   mediasource.addEventListener('sourceopen', () => {
+    //     const sourceBuffer = mediasource.addSourceBuffer(mimeType);
+    //     sourceBuffer.addEventListener('updateend', () => mediasource.endOfStream());
+    //     bufferGet(`${baseURL}/audio/1.webm`).then(buf => sourceBuffer.appendBuffer(buf))
+    //   })
+    //   return URL.createObjectURL(mediasource);
+    // }
+    // return '233';
+    const blob = await blobGet(`${baseURL}/audio/1.webm`);
+    return URL.createObjectURL(blob);
+  }
+  componentWillMount() {
+    Promise.all([this.getVideoEditorData(), this.getAudioURL()]).then(([data, url]) => {
       this.editorData = data;
+      this.setState({ audioUrl: url });
     }).catch(err => console.error(err));
   }
-  handleResizeMonacoEditor(entries: IResizeEntry[]) {
+  componentDidMount() {
+    this.playArea = document.querySelector('#play-area') as HTMLElement;
+    this.audioElement = document.querySelector('audio') as HTMLAudioElement;
+    this.audioElement.addEventListener('seeked', lodash.debounce(this.handleAudioSeek, 100));
+    this.audioElement.addEventListener('play', () => {this.setState({ play: true })});
+    this.audioElement.addEventListener('ended', () => {this.setState({ play: false })});
+  }
+  handleResizeMonacoEditor = (entries: IResizeEntry[]) => {
     // console.log(entries);
     const e = entries[0] as IResizeEntry;
     const sidebar = document.querySelector('.SidebarView');
@@ -112,11 +140,16 @@ class Video extends React.Component<{}, IState> {
     const height = e.contentRect.height;
     this.setState({ monacoSize: {width: `${width}`, height: `${height}`} });
   }
-  handlePlayClick() {
-    this.setState({ play: !this.state.play });
+  handlePlayClick = () => this.setState({ play: !this.state.play })
+  handleAudioSeek = (event: Event) => {
+    const second = (event.target as HTMLAudioElement).currentTime;
+    // 向下取一位小数 即以 0.1s 为单位
+    const startSeekPos: number = +second.toFixed(1);
+    this.currentTime = startSeekPos * 10;
+    this.setState({ play: true });
   }
   render() {
-    const position = this.state.position;
+    const { position, audioUrl } = this.state;
     const options = {
       minimap: { enabled: false },
       scrollbar: { verticalScrollbarSize: 0, verticalSliderSize: 15, 
@@ -134,12 +167,9 @@ class Video extends React.Component<{}, IState> {
                   <Sidebar title="Project" dirs={dirs} depandencies={depandencies} />
                 </div>
                 <div className="EditorView">
-                  <MonacoEditor
-                    ref={this.editorRef}
-                    width={width}
-                    height={height}
-                    language="javascript"
-                    theme="vs-dark"
+                  <MonacoEditor ref={this.editorRef}
+                    width={width} height={height}
+                    language="javascript" theme="vs-dark"
                     options={options}
                   />
                 </div>
@@ -152,7 +182,14 @@ class Video extends React.Component<{}, IState> {
               </div>
             </ResizeSensor>
           </div>
-          <div className="none">2333</div>
+          <div className="none audio">
+            <audio controls preload="auto" src={audioUrl}>您的浏览器不支持 audio 标签。</audio>
+            {/* <ReactPlayer url={audioUrl} controls playing
+              width="100%" height="100%"
+              config={{
+                file: { forceAudio: true }
+              }}/> */}
+          </div>
         </div>
         <div className="Page">
           <article>
