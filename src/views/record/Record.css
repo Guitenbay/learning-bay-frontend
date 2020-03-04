@@ -1,3 +1,8 @@
 #record-area {
   position: relative;
 }
+
+.controls {
+  width: 100%;
+  height: var(--audio-height);
+}

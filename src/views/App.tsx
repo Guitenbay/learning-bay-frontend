@@ -1,15 +1,15 @@
 import React, { FunctionComponent, useState } from 'react';
 import { Router, Route, Switch, Redirect, NavLink } from 'react-router-dom';
 import { Navbar, Alignment, Button, Classes, Menu, Popover } from '@blueprintjs/core';
-import history from './history'
+import history from './history';
 import Home from './home/Home';
 import Video from './video/Video';
 import Record from './record/Record';
 import Code from './code/Code';
+import { store, SET_THEME } from './state'
 
 const App: FunctionComponent = () => {
   const [ dark, setDark ] = useState(false);
-
   return (
     <div className={ dark ? Classes.DARK : '' } style={{display: "flex", flexDirection: "column"}} >
       <Router history={history}>
@@ -17,11 +17,11 @@ const App: FunctionComponent = () => {
           <Navbar>
             <Navbar.Group align={Alignment.LEFT}>
               <Navbar.Heading>LearningBay</Navbar.Heading>
-              <Button icon={ dark ? "flash" : "moon"} minimal onClick={() => { setDark(!dark) }} />
+              <Button icon={ dark ? "flash" : "moon"} minimal onClick={() => { setDark(!dark); store.dispatch({ type: SET_THEME, value: !dark }) }} />
             </Navbar.Group>
             <Navbar.Group align={Alignment.RIGHT}>
               <NavLink to="/" className="bp3-button bp3-minimal bp3-icon-home">Home</NavLink>
-              <NavLink to="/play" className="bp3-button bp3-minimal bp3-icon-film">Play</NavLink>
+              <NavLink to="/play" className="bp3-button bp3-minimal bp3-icon-video">Video</NavLink>
               <NavLink to="/record" className="bp3-button bp3-minimal bp3-icon-mobile-video">Record</NavLink>
               <NavLink to="/about" className="bp3-button bp3-minimal bp3-icon-help">About</NavLink>
               <Navbar.Divider />

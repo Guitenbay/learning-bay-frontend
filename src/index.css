@@ -8,7 +8,7 @@
   --main-width: 1192px;
   --sidebar-width: 200px;
   --titlebar-height: 40px;
-  --audio-height: 40px;
+  --audio-height: 30px;
 }
 /* Color */
 :root {
@@ -61,11 +61,22 @@ footer {
   top: 0;
   left: 0;
 }
+.TitlebarView {
+  position: absolute;
+  width: auto;
+  height: var(--titlebar-height);
+  left: var(--sidebar-width);
+  display: flex;
+}
+.TitlebarView > * {
+  align-items: center;
+  flex: none;
+}
 .EditorView {
   position: absolute;
   width: auto;
   left: var(--sidebar-width);
-  /* top: var(--titlebar-height); */
+  top: var(--titlebar-height);
 }
 .PaneView {
   position: absolute;

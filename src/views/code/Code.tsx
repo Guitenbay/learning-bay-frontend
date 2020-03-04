@@ -1,39 +1,40 @@
 import React, { Fragment, RefObject, createRef } from 'react';
-import MonacoEditor from 'react-monaco-editor';
-import Axios from 'axios';
-import { baseURL } from '../config';
 import Footer from '../../components/Footer';
+import { store } from '../state';
+import CodeEditor from '../../components/CodeEditor';
+import { Directory, Depandency } from '../../components/sidebar.d';
+import './Code.css'
+
+const dirs: Array<Directory> = [{
+  name: 'src',
+  files: [
+    { name: 'index.html', icon: 'html' },
+    { name: 'index.js', icon: 'js' },
+  ]
+}]
+const depandencies: Array<Depandency> = [
+  { name: 'react' },
+  { name: 'react-dom' },
+]
 
 class Code extends React.Component {
-  private editorRef: RefObject<MonacoEditor> = createRef<MonacoEditor>();
-  constructor(props: {}) {
-    super(props);
-    this.handleRunClick = this.handleRunClick.bind(this);
-  }
-  handleRunClick() {
-    let context: string | undefined = this.editorRef.current?.editor?.getValue();
-    if (typeof context === 'undefined') context = '';
-    Axios.post(`${baseURL}/code/js/child?uid=guitenbay`, { code: Base64.encode(context) }).then(resp => {
-      console.log(resp.data);
-    }).catch(err => console.error(err));
-  }
+  private editorRef: RefObject<CodeEditor> = createRef<CodeEditor>();
+  
   render() {
-    const options = {
-      minimap: { enabled: false },
-      scrollbar: { verticalScrollbarSize: 0, verticalSliderSize: 14, 
-        horizontalScrollbarSize: 0, horizontalSliderSize: 14 }
-    };
+    const { darkTheme } = store.getState();
     return (
       <Fragment>
-        <button onClick={this.handleRunClick}>Run</button>
-        <MonacoEditor
-          ref={this.editorRef}
-          width="100%"
-          height="600"
-          language="javascript"
-          theme="vs-dark"
-          options={options}
-        />
+        <div className="Page">
+          <article>
+            something in here...
+          </article>
+          <div id="code-area" style={{height: '600px', margin: '0 auto', maxWidth: 'var(--main-width)'}}>
+            <CodeEditor ref={this.editorRef}
+              darkTheme={darkTheme}
+              dirs={dirs} depandencies={depandencies}
+            />
+          </div>
+        </div>
         <Footer />
       </Fragment>
     )

@@ -1,0 +1,61 @@
+.AudioController {
+  --bg-color: #5e9af9;
+  --button-color: white;
+  --muted-button-color: rgba(255, 255, 255, 0.6);
+  --elapsed-color: white;
+  --track-color: rgba(255, 255, 255, 0.25);
+  --label-color: rgba(255, 255, 255, 0.6);
+  --icon-color: rgba(255, 255, 255, 0.8);
+  --slider-bg-color: #dfebfe;
+}
+
+.AudioController {
+  background: var(--bg-color);
+  color: var(--label-color);
+}
+
+.Timeline {
+  align-items: center;
+}
+
+.track {
+  position: relative;
+  margin: 0;
+  height: 5px;
+  background: var(--track-color);
+  cursor: ew-resize;
+}
+.Elapsed.elapsed {
+  height: 100%;
+  transform-origin: 0 100%;
+  background: var(--elapsed-color);
+  will-change: transform;
+}
+.time {
+  margin: 0 7px;
+}
+
+.SliderButton {
+  position: relative;
+}
+.volume_slider {
+  min-width: 100px;
+}
+.volume_slider .bp3-slider-progress.bp3-intent-primary {
+  background-color: var(--bg-color);
+}
+.volume_slider .bp3-slider-handle {
+  background-color: #f5f8fa;
+}
+.slider-bg {
+  position: absolute;
+  right: 3px;
+  bottom: calc(6px + var(--audio-height));
+  padding: 3px 8px;
+  background-color: var(--slider-bg-color);
+  border-radius: 15px;
+  -webkit-box-shadow: 0px 2px 3px 0px rgba(107, 114, 119, 0.33);
+  -moz-box-shadow: 0px 2px 3px 0px rgba(107, 114, 119, 0.33);
+  box-shadow: 0px 2px 3px 0px rgba(107, 114, 119, 0.33);
+}
+.slider-bg.hidden { display: none; }

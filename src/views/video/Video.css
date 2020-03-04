@@ -3,7 +3,7 @@
   overflow: hidden;
 }
 
-.audio, audio {
+.audio {
   width: 100%;
   height: var(--audio-height);
 }

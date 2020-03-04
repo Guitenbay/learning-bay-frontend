@@ -1,20 +1,18 @@
 import React, { createRef, RefObject } from 'react';
 import { Base64 } from 'js-base64';
-import { ResizeSensor, IResizeEntry } from '@blueprintjs/core';
 import { ReactMic, ReactMicStopEvent } from 'react-mic';
 import './Record.css';
-import MonacoEditor from 'react-monaco-editor';
-import Sidebar from '../../components/Sidebar';
 import { Directory, Depandency } from '../../components/sidebar.d';
 import { IEditorFrame } from '../frame.d';
 import { baseURL } from '../config'
 import { IMouseEventData, IMouseMoveData } from '../frame.d';
 import { blobPost } from '../../utils/blob-ajax';
+import { store } from '../state';
+import CodeEditor from '../../components/CodeEditor';
 
 interface IState {
   title: string,
-  record: boolean,
-  monacoSize: { width: string, height: string }
+  record: boolean
 }
 
 const CACHE_SIZE = 10;
@@ -26,14 +24,13 @@ const dirs: Array<Directory> = [{
     { name: 'index.js', icon: 'js' },
   ]
 }]
-
 const depandencies: Array<Depandency> = [
   { name: 'react' },
   { name: 'react-dom' },
 ]
 
 class Record extends React.Component<{}, IState> {
-  private editorRef: RefObject<MonacoEditor> = createRef<MonacoEditor>();
+  private editorRef: RefObject<CodeEditor> = createRef<CodeEditor>();
   private cacheFrames: Array<IEditorFrame> = [];
   private uploadChunks: Array<Array<IEditorFrame>> = [];
   private currentMousePos: IMouseMoveData = {type:'mouse-move',x:0,y:0};
@@ -44,8 +41,7 @@ class Record extends React.Component<{}, IState> {
     super(props);
     this.state = {
       title: 'undefined',
-      record: false,
-      monacoSize: { width: '100%', height: '100%' }
+      record: false
     }
   }
   setListeners() {
@@ -142,17 +138,6 @@ class Record extends React.Component<{}, IState> {
   componentDidMount() {
     this.setListeners();
   }
-  handleResizeMonacoEditor = (entries: IResizeEntry[]) => {
-    // console.log(entries);
-    const e = entries[0] as IResizeEntry;
-    const sidebar = document.querySelector('.SidebarView');
-    let width = e.contentRect.width
-    if (sidebar !== null) {
-      width -= (sidebar as HTMLElement).offsetWidth;
-    }
-    const height = e.contentRect.height;
-    this.setState({ monacoSize: {width: `${width}`, height: `${height}`} });
-  }
   handleRecordClick = () => {
     this.setState({ record: !this.state.record });
   }
@@ -171,48 +156,30 @@ class Record extends React.Component<{}, IState> {
     }).catch(err => console.error(err));
   }
   render() {
-    const options = {
-      minimap: { enabled: false },
-      scrollbar: { verticalScrollbarSize: 0, verticalSliderSize: 15, 
-        horizontalScrollbarSize: 0, horizontalSliderSize: 15 }
-    };
-    const { width, height } = this.state.monacoSize;
+    const { darkTheme } = store.getState();
     return (
       <div className="flex vertical" style={{width: '100%', height: '100%', overflow: "hidden"}}>
         <div className="auto">
-          <ResizeSensor onResize={this.handleResizeMonacoEditor}>
-            <div id="record-area" style={{width: '100%', height: '100%'}}>
-              <div className="SidebarView">
-                <Sidebar title="Project" dirs={dirs} depandencies={depandencies} />
-              </div>
-              <div className="EditorView">
-                <MonacoEditor
-                  ref={this.editorRef}
-                  width={width}
-                  height={height}
-                  language="javascript"
-                  theme="vs-dark"
-                  options={options}
-                  />
-              </div>
-              <div className="PaneView">
-
-              </div>
-              <div className="InterfaceView MarkView">
-                <button className="none" onClick={this.handleRecordClick}>Record</button>
-              </div>
-              <div className="InterfaceView AudioView">
-                <ReactMic
-                  record={this.state.record}
-                  className="sound-wave"
-                  onStop={this.onStop}
-                  strokeColor="#000000"
-                  backgroundColor="#FF4081" />
-              </div>
+          <div id="record-area" style={{width: '100%', height: '100%'}}>
+            <CodeEditor ref={this.editorRef}
+              darkTheme={darkTheme}
+              dirs={dirs} depandencies={depandencies}
+            />
+            <div className="InterfaceView MarkView">
             </div>
-          </ResizeSensor>
+            <div className="InterfaceView AudioView">
+              <ReactMic
+                record={this.state.record}
+                className="sound-wave"
+                onStop={this.onStop}
+                strokeColor="#000000"
+                backgroundColor="#FF4081" />
+            </div>
+          </div>
         </div>
-        <div className="none">2333</div>
+        <div className="none controls">
+          <button className="none" onClick={this.handleRecordClick}>Record</button> 
+        </div>
       </div>
     );
   }
