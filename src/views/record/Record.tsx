@@ -44,7 +44,7 @@ class Record extends React.Component<{}, IState> {
       record: false
     }
   }
-  setListeners() {
+  private setListeners() {
     const recordArea: HTMLElement = document.querySelector<HTMLElement>('#record-area') as HTMLElement;
     recordArea?.addEventListener('mousemove', event => {
       // console.dir(event);
@@ -66,14 +66,14 @@ class Record extends React.Component<{}, IState> {
       } as IMouseEventData)
     });
   }
-  async uploadEditorFrame(frames: Array<IEditorFrame>) {
+  private async uploadEditorFrame(frames: Array<IEditorFrame>) {
     const data = Base64.encode(JSON.stringify(frames));
     const blob = new Blob([data], {type : 'application/octet-stream'});
     // const resp = await axios.post(`${baseURL}/video/1.mmcv`, blob);
     const resp = await blobPost(`${baseURL}/video/1.mmcv`, blob);
     return resp;
   }
-  recordFrame = () => {
+  private recordFrame = () => {
     const frame = Object.assign({}, {
       index: this.currentTime,
       mouseMove: this.currentMousePos,
@@ -138,7 +138,7 @@ class Record extends React.Component<{}, IState> {
   componentDidMount() {
     this.setListeners();
   }
-  handleRecordClick = () => {
+  private handleRecordClick = () => {
     this.setState({ record: !this.state.record });
   }
   // onData(recordedBlob: Blob) {
@@ -177,7 +177,7 @@ class Record extends React.Component<{}, IState> {
             </div>
           </div>
         </div>
-        <div className="none controls">
+        <div className="none ControlsView">
           <button className="none" onClick={this.handleRecordClick}>Record</button> 
         </div>
       </div>

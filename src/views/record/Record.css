@@ -1,8 +1,9 @@
 #record-area {
   position: relative;
+  overflow: hidden;
 }
 
-.controls {
+.ControlsView {
   width: 100%;
   height: var(--audio-height);
 }

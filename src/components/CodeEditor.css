@@ -1,0 +1,63 @@
+/* .CodeEditor > .overflow-guard > div.margin[role="presentation"],
+.CodeEditor > .overflow-guard > div.monaco-scrollable-element.editor-scrollable {
+  margin-top: var(--editor-top);
+}
+.CodeEditor > .overflow-guard > textarea {
+  top: var(--editor-top);
+} */
+
+.EditorRoot {
+  --editor-top: 20px;
+  --console-height: 30px;
+  --dark-divider-color: #3c4246;
+  --light-console-color: #fffffe;
+  --dark-console-color: #1e1e1e;
+  --dark-title-color: #191919;
+  --light-title-color: #f6f6f6;
+}
+.project.title {
+  height: var(--titlebar-height);
+  line-height: var(--titlebar-height);
+  padding: 0 7px;
+  margin: 0;
+  font-size: 12pt;
+}
+.TitlebarView { background-color: var(--light-title-color); }
+.TitlebarView.dark { background-color: var(--dark-title-color); }
+.ConsoleView > .divider {
+  margin: 0 12px;
+}
+.ConsoleView > .divider.dark {
+  border-color: var(--dark-divider-color);
+}
+.ConsoleView .header {
+  height: var(--console-height);
+  padding: 0 8px 0 13px;
+  opacity: 0.7;
+}
+.ConsoleView .header:hover {
+  opacity: 1;
+}
+.ConsoleView .title {
+  line-height: var(--console-height);
+  cursor: pointer;
+}
+.ConsoleView .Logs {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0 13px;
+  overflow: auto;
+}
+.Logs > .log.output{
+  position: relative;
+  margin: 0;
+  padding-left: 18px;
+  line-height: 18px;;
+}
+.Logs > .log.output:before {
+  font-family: 'Source Code Pro';
+  content: "> ";
+  position: absolute;
+  width: 18px;
+  left: 0;
+}

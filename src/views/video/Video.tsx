@@ -46,7 +46,7 @@ class Video extends React.Component<{}, IState> {
       position: { x: 0, y: 0 },
     }
   }
-  playFrame = () => {
+  private playFrame = () => {
     if (this.editorData.length <= this.currentTime) {
       this.setState({ play: false });
       return;
@@ -70,18 +70,7 @@ class Video extends React.Component<{}, IState> {
     // 每隔 0.1s 调用函数
     if (this.state.play) setTimeout(() => requestAnimationFrame(this.playFrame), 100);
   }
-  componentDidUpdate(prevProps:{}, prevState: IState) {
-    // play => true
-    if (this.state.play && !prevState.play) {
-      requestAnimationFrame(this.playFrame);
-      this.audioElement?.play();
-    }
-    // play => false
-    if (!this.state.play && !prevState.play) {
-      this.audioElement?.pause();
-    }
-  }
-  async getVideoEditorData() {
+  private async getVideoEditorData() {
     const resp = await blobGet(`${baseURL}/video/1.mmcv`);
     const rawData = await resp.text();
     let editorData: Array<IEditorFrame> = [];
@@ -95,22 +84,20 @@ class Video extends React.Component<{}, IState> {
     }
     return editorData.sort((former, latter) => (former.index - latter.index));
   }
-  async getAudioURL() {
-    // const mimeType = 'text/plain';
-    // console.log('MediaSource' in window);
-    // console.log(MediaSource.isTypeSupported(mimeType));
-    // if ('MediaSource' in window) {
-    //   const mediasource = new MediaSource();
-    //   mediasource.addEventListener('sourceopen', () => {
-    //     const sourceBuffer = mediasource.addSourceBuffer(mimeType);
-    //     sourceBuffer.addEventListener('updateend', () => mediasource.endOfStream());
-    //     bufferGet(`${baseURL}/audio/1.webm`).then(buf => sourceBuffer.appendBuffer(buf))
-    //   })
-    //   return URL.createObjectURL(mediasource);
-    // }
-    // return '233';
+  private async getAudioURL() {
     const blob = await blobGet(`${baseURL}/audio/1.webm`);
     return URL.createObjectURL(blob);
+  }
+  componentDidUpdate(prevProps:{}, prevState: IState) {
+    // play => true
+    if (this.state.play && !prevState.play) {
+      requestAnimationFrame(this.playFrame);
+      this.audioElement?.play();
+    }
+    // play => false
+    if (!this.state.play && !prevState.play) {
+      this.audioElement?.pause();
+    }
   }
   componentWillMount() {
     Promise.all([this.getVideoEditorData(), this.getAudioURL()]).then(([data, url]) => {
@@ -122,10 +109,10 @@ class Video extends React.Component<{}, IState> {
     this.playArea = document.querySelector('#play-area') as HTMLElement;
     this.audioElement = document.querySelector('audio') as HTMLAudioElement;
   }
-  handleAudioPlay = () => this.setState({ play: true })
-  handleAudioEnded = () => this.setState({ play: false })
-  handlePlayClick = () => this.setState({ play: !this.state.play })
-  handleAudioSeek = (event: Event) => {
+  private handleAudioPlay = () => this.setState({ play: true })
+  private handleAudioEnded = () => this.setState({ play: false })
+  private handlePlayClick = () => this.setState({ play: !this.state.play })
+  private handleAudioSeek = (event: Event) => {
     const second = (event.target as HTMLAudioElement).currentTime;
     // 向下取一位小数 即以 0.1s 为单位
     const startSeekPos: number = +second.toFixed(1);

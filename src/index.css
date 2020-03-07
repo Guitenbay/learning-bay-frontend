@@ -6,7 +6,7 @@
 :root {
   --page-padding: 48px;
   --main-width: 1192px;
-  --sidebar-width: 200px;
+  --sidebar-width: 230px;
   --titlebar-height: 40px;
   --audio-height: 30px;
 }
@@ -30,7 +30,7 @@ a:hover { color: var(--uxa-link-hover-color) }
 }
 
 article {
-  margin: 0 auto;
+  margin: 10px auto;
   max-width: var(--main-width);
 }
 
@@ -52,6 +52,9 @@ footer {
 .flex.vertical { flex-direction: column; }
 .flex > .none { flex: none; }
 .flex > .auto { flex: auto; }
+.flex.start { justify-content: flex-start; }
+.flex.end { justify-content: flex-end; }
+.flex.between { justify-content: space-between; }
 /* -----------Editor View Start------------ */
 .SidebarView {
   width: var(--sidebar-width);
@@ -67,10 +70,8 @@ footer {
   height: var(--titlebar-height);
   left: var(--sidebar-width);
   display: flex;
-}
-.TitlebarView > * {
   align-items: center;
-  flex: none;
+  padding-right: 5px;
 }
 .EditorView {
   position: absolute;
@@ -78,7 +79,7 @@ footer {
   left: var(--sidebar-width);
   top: var(--titlebar-height);
 }
-.PaneView {
+.ConsoleView {
   position: absolute;
   top: 100%;
   right: 0;
@@ -89,7 +90,7 @@ footer {
   transform: translate3d(0,-31px,0);
   transition: transform .2s cubic-bezier(.19,1,.22,1);
 }
-.PaneView.open {
+.ConsoleView.open {
   transform: translate3d(0,-100%,0);
 }
 .InterfaceView { pointer-events: none; }

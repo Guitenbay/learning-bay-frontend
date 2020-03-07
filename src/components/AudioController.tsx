@@ -45,16 +45,16 @@ class AudioController extends React.Component<IProps, IState> {
     progress.addEventListener('mouseup', () => mousedown = false);
     progress.addEventListener('mousemove', e => mousedown && handleScrub(e));
   }
-  handlePlay = () => {
+  private handlePlay = () => {
     if (this.audio?.paused) {
       this.audio.play();
     } else {
       this.audio?.pause();
     }
   }
-  handleSliderClick  = () => { this.setState({showSlider: !this.state.showSlider}) }
-  handleSliderHidden = () => { this.setState({showSlider: false}) }
-  handleVolumeChange = (value: number) => {
+  private handleSliderClick  = () => { this.setState({showSlider: !this.state.showSlider}) }
+  private handleSliderHidden = () => { this.setState({showSlider: false}) }
+  private handleVolumeChange = (value: number) => {
     this.setState({ volume: value }, 
       () => (this.audio as HTMLAudioElement).volume = value);
   }
