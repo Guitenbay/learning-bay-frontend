@@ -3,7 +3,7 @@ import MonacoEditor from "react-monaco-editor";
 import { v5 as uuidv5 } from 'uuid';
 import { Directory, Depandency } from "./sidebar.d";
 import { IResizeEntry, ResizeSensor, Divider, Button, Tree, ITreeNode, H5 } from "@blueprintjs/core";
-import Axios from "axios";
+import IO from "socket.io-client";
 import { baseURL } from "../views/config";
 import './CodeEditor.css'
 
@@ -13,12 +13,13 @@ interface IProps {
   depandencies: Array<Depandency>
 }
 interface IState { 
-  showConsole: boolean, result: string,
+  showConsole: boolean, outputs: string[],
   nodes: ITreeNode[],
   monacoSize: { width: string, height: string }
 }
 const NAMESPACE = uuidv5("learningbay-frontend", uuidv5.DNS);
 class CodeEditor extends React.Component<IProps, IState> {
+  private client = IO(baseURL);
   private options = {
     minimap: { enabled: false },
     scrollbar: { verticalScrollbarSize: 0, verticalSliderSize: 14, 
@@ -33,12 +34,26 @@ class CodeEditor extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
     this.state = {
-      showConsole: false, result: "",
+      showConsole: false, outputs: [""],
       nodes: [{id:uuidv5('file', NAMESPACE), isExpanded: true, label:'files', icon:'folder-open', childNodes: [{
         id: uuidv5('index.js', NAMESPACE), icon: "document", label: "index.js", isSelected: true
       }]}],
       monacoSize: { width: '100%', height: '100%' }
     }
+  }
+  componentDidMount() {
+    this.client.on('code-output', (msg: string) => {
+      let lastStr = this.state.outputs.pop() as string;
+      lastStr += msg;
+      this.state.outputs.push(lastStr);
+      this.setState({ outputs: this.state.outputs });
+    });
+    this.client.on('code-exit', () => {
+      this.setState({ outputs: this.state.outputs.concat([""]) });
+    });
+  }
+  componentWillUnmount() {
+    if (this.client.connected) this.client.disconnect();
   }
   private handleResizeMonacoEditor = (entries: IResizeEntry[]) => {
     const e = entries[0] as IResizeEntry;
@@ -53,13 +68,13 @@ class CodeEditor extends React.Component<IProps, IState> {
     this.setState({ monacoSize: {width: `${width}`, height: `${height}`} });
   }
   private handleRunClick = () => {
-    let context: string | undefined = this.editorRef.current?.editor?.getValue();
-    if (typeof context === 'undefined') context = '';
-    Axios.post(`${baseURL}/code/js/child?uid=guitenbay`, { code: Base64.encode(context) }).then(resp => {
-      console.log(resp.data);
-      const { res, result } = resp.data;
-      if (res) { this.setState({ result }) }
-    }).catch(err => console.error(err));
+    let content: string | undefined = this.editorRef.current?.editor?.getValue();
+    if (typeof content === 'undefined') content = '';
+    if (!this.client.connected) this.client.connect();
+    this.client.emit('code', {
+      extname: 'js', filename: 'child', uid: 'guitenbay',
+      codeContent: content
+    })
   }
   private handleShowConsole = () => {
     const editorEle = document.querySelector(".react-monaco-editor-container") as HTMLElement;
@@ -94,9 +109,9 @@ class CodeEditor extends React.Component<IProps, IState> {
   }
   render() {
     const { darkTheme } = this.props;
-    const { showConsole, result } = this.state;
+    const { showConsole, outputs } = this.state;
     const { width, height } = this.state.monacoSize;
-    const logs = (<pre className="log output">{result}</pre>)
+    const logs = outputs.map((output, index) => (<pre className="log output" key={`log-${index}`}>{output}</pre>));
     return (
       <ResizeSensor onResize={this.handleResizeMonacoEditor}>
         <div className="EditorRoot" style={{ width: '100%', height: '100%' }}>

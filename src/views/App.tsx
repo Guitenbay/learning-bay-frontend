@@ -20,10 +20,10 @@ const App: FunctionComponent = () => {
               <Button icon={ dark ? "flash" : "moon"} minimal onClick={() => { setDark(!dark); store.dispatch({ type: SET_THEME, value: !dark }) }} />
             </Navbar.Group>
             <Navbar.Group align={Alignment.RIGHT}>
-              <NavLink to="/" className="bp3-button bp3-minimal bp3-icon-home">Home</NavLink>
-              <NavLink to="/play" className="bp3-button bp3-minimal bp3-icon-video">Video</NavLink>
-              <NavLink to="/record" className="bp3-button bp3-minimal bp3-icon-mobile-video">Record</NavLink>
-              <NavLink to="/about" className="bp3-button bp3-minimal bp3-icon-help">About</NavLink>
+              <NavLink to="/" className="bp3-button bp3-minimal bp3-icon-home">首页</NavLink>
+              <NavLink to="/play" className="bp3-button bp3-minimal bp3-icon-video">视频</NavLink>
+              <NavLink to="/record" className="bp3-button bp3-minimal bp3-icon-mobile-video">录制</NavLink>
+              <NavLink to="/about" className="bp3-button bp3-minimal bp3-icon-help">关于</NavLink>
               <Navbar.Divider />
               <Popover>
                 <Button icon="user" minimal />
