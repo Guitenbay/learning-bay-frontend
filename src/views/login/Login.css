@@ -1,0 +1,8 @@
+.input-card {
+  margin: 150px auto;
+  max-width: 400px;
+}
+
+.input-card > * {
+  margin-bottom: 30px;
+}

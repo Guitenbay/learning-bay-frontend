@@ -1,3 +1,18 @@
 .Page {
   padding: var(--page-padding);
 }
+
+article > div {
+  margin-top: 20px;
+}
+
+article .grid {
+  display: grid;
+  grid-gap: 20px;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.grid .card {
+  padding-right: 10px;
+  padding-bottom: 10px;
+}

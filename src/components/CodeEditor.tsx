@@ -9,8 +9,9 @@ import './CodeEditor.css'
 
 interface IProps { 
   darkTheme: boolean
-  dirs: Array<Directory>,
-  depandencies: Array<Depandency>
+  dirs?: Array<Directory>,
+  depandencies?: Array<Depandency>,
+  code?: string
 }
 interface IState { 
   showConsole: boolean, outputs: string[],
@@ -84,6 +85,7 @@ class CodeEditor extends React.Component<IProps, IState> {
     else height *= 2/3;
     this.setState({ showConsole: !this.state.showConsole, monacoSize: { width: `${width}`, height: `${height}`}});
   }
+  // tree Events
   private handleNodeClick = (nodeData: ITreeNode, _nodePath: number[], e: React.MouseEvent<HTMLElement>) => {
     const originallySelected = nodeData.isSelected;
     if (!e.shiftKey) {
@@ -108,7 +110,7 @@ class CodeEditor extends React.Component<IProps, IState> {
     }
   }
   render() {
-    const { darkTheme } = this.props;
+    const { darkTheme, code } = this.props;
     const { showConsole, outputs } = this.state;
     const { width, height } = this.state.monacoSize;
     const logs = outputs.map((output, index) => (<pre className="log output" key={`log-${index}`}>{output}</pre>));
@@ -136,6 +138,7 @@ class CodeEditor extends React.Component<IProps, IState> {
               width={width} height={height}
               language="javascript" theme={ darkTheme ? "vs-dark": "vs-light" }
               options={this.options}
+              value={code}
             />
           </div>
           <div className={ showConsole ? "ConsoleView open" : "ConsoleView"}

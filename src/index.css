@@ -30,7 +30,7 @@ a:hover { color: var(--uxa-link-hover-color) }
 }
 
 article {
-  margin: 10px auto;
+  margin: 20px auto;
   max-width: var(--main-width);
 }
 
@@ -47,14 +47,20 @@ footer {
 .bp3-dark footer {
   background-color: var(--dark-bg-color);
 }
+
+.bp3-dark .bp3-card {
+  background-color: #293742;
+}
 /* -----------Theme end------------ */
 .flex { display: flex; }
 .flex.vertical { flex-direction: column; }
 .flex > .none { flex: none; }
 .flex > .auto { flex: auto; }
+.flex.center { justify-content: center; }
 .flex.start { justify-content: flex-start; }
 .flex.end { justify-content: flex-end; }
 .flex.between { justify-content: space-between; }
+.flex.evenly { justify-content: space-evenly; }
 /* -----------Editor View Start------------ */
 .SidebarView {
   width: var(--sidebar-width);
@@ -134,7 +140,7 @@ body {
   /* font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif; */
-  font-family: "PingFang SC","source-han-sans-simplified-c","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
+  font-family: "PingFang SC","Microsoft YaHei","微软雅黑",Arial,sans-serif;
   letter-spacing: 0.2pt;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -142,4 +148,8 @@ body {
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+img {
+  object-fit: cover;
 }

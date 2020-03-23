@@ -1,0 +1,8 @@
+.chapter-li {
+  cursor: pointer;
+}
+
+.chapter-li h3 {
+  margin: 10px 0;
+  color: var(--uxa-link-color);
+}

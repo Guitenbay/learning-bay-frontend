@@ -12,8 +12,8 @@ const Footer: FunctionComponent = () => (
         <div style={{justifySelf: "center"}}>Creacted by<a href="https://github.com/Guitenbay">@Guitenbay</a></div>
         <div style={{justifySelf: "end"}}>
           <Link to="/">Home</Link>
-          <Link to="/play">Play</Link>
-          <Link to="/record">Record</Link>
+          {/* <Link to="/play">Play</Link>
+          <Link to="/record">Record</Link> */}
           <Link to="/about">About</Link>
         </div>
       </div>
