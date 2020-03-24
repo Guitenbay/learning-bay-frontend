@@ -5,9 +5,10 @@ import CodeEditor from '../../components/CodeEditor';
 import { Directory, Depandency } from '../../components/sidebar.d';
 import './Code.css'
 import { RouteComponentProps } from 'react-router-dom';
-import { Axios, fusekiURL } from '../config';
-import { Toaster, Intent, H2 } from '@blueprintjs/core';
+import { Axios, fusekiURL, baseURL } from '../config';
+import { H2 } from '@blueprintjs/core';
 import ReactMarkdown from 'react-markdown';
+import { addErrorToast } from '../toaster';
 
 const dirs: Array<Directory> = [{
   name: 'src',
@@ -34,7 +35,6 @@ interface IState {
 
 class Code extends React.Component<RouteComponentProps, IState> {
   private editorRef: RefObject<CodeEditor> = createRef<CodeEditor>();
-  private toastRef: RefObject<Toaster> = createRef<Toaster>();
   constructor(props: RouteComponentProps) {
     super(props);
     this.state = {
@@ -50,21 +50,28 @@ class Code extends React.Component<RouteComponentProps, IState> {
       return undefined;
     }
   }
-  addErrorToast(message: string) {
-    this.toastRef.current?.show({
-      icon: "error",
-      intent: Intent.WARNING,
-      message,
-      timeout: 5000
-    })
-  }
   componentDidMount() {
-    const { uri } = this.props.location.state as {uri: string};
-    this.getCodeQuestion(uri).then(codeQuestion => {
-      if (codeQuestion === undefined) {
-        this.addErrorToast("获取数据失败");
+    const state = this.props.location.state as {uri: string | undefined};
+    if (typeof state?.uri === 'string') {
+      this.getCodeQuestion(state?.uri as string).then(codeQuestion => {
+        if (codeQuestion === undefined) {
+          addErrorToast("获取数据失败");
+        } else {
+          this.setState({ codeQuestion });
+        }
+      }).catch(err => console.error(err));
+    }
+  }
+  handleRunCode = (code: string) => {
+    Axios.post(baseURL+"/code/analyse", 
+      { code, testFilename: '1.test' }, 
+      { headers: { 'Context-Type': 'application/json' }, withCredentials: true }
+    ).then(resp => {
+      const { res, data } = resp.data;
+      if (res) {
+        console.log(data);
       } else {
-        this.setState({ codeQuestion });
+        addErrorToast(data);
       }
     }).catch(err => console.error(err));
   }
@@ -73,8 +80,6 @@ class Code extends React.Component<RouteComponentProps, IState> {
     const { codeQuestion } = this.state;
     return (
       <Fragment>
-        <Toaster position="top"
-        ref={this.toastRef} />
         <div className="Page">
           <article>
             <H2>{codeQuestion?.title}</H2>
@@ -85,6 +90,7 @@ class Code extends React.Component<RouteComponentProps, IState> {
               darkTheme={darkTheme}
               dirs={dirs} depandencies={depandencies}
               code={codeQuestion?.code}
+              onRunCode={this.handleRunCode}
             />
           </div>
         </div>

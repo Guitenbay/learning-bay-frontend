@@ -11,7 +11,8 @@ interface IProps {
   darkTheme: boolean
   dirs?: Array<Directory>,
   depandencies?: Array<Depandency>,
-  code?: string
+  code?: string,
+  onRunCode?: (code: string) => void
 }
 interface IState { 
   showConsole: boolean, outputs: string[],
@@ -47,7 +48,7 @@ class CodeEditor extends React.Component<IProps, IState> {
       let lastStr = this.state.outputs.pop() as string;
       lastStr += msg;
       this.state.outputs.push(lastStr);
-      this.setState({ outputs: this.state.outputs });
+      this.setState({ outputs: this.state.outputs, showConsole: true });
     });
     this.client.on('code-exit', () => {
       this.setState({ outputs: this.state.outputs.concat([""]) });
@@ -75,7 +76,8 @@ class CodeEditor extends React.Component<IProps, IState> {
     this.client.emit('code', {
       extname: 'js', filename: 'child', uid: 'guitenbay',
       codeContent: content
-    })
+    });
+    this.props.onRunCode?.call(this, content);
   }
   private handleShowConsole = () => {
     const editorEle = document.querySelector(".react-monaco-editor-container") as HTMLElement;

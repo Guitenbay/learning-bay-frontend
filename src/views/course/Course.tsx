@@ -58,11 +58,16 @@ class Course extends React.Component<RouteComponentProps, IState> {
     }
   }
   componentDidMount() {
-    const parsed = parse(this.props.location.search);
-    const uri = Base64.decode(parsed.uri as string);
-    this.getChapterList(uri).then(chapterList => {
-      this.setState({ chapterList });
-    }).catch(err => console.error(err));
+    const search = this.props.location.search;
+    if (typeof search === 'string') {
+      const parsed = parse(search);
+      if (!!parsed.uri) {
+        const uri = Base64.decode(parsed.uri as string);
+        this.getChapterList(uri).then(chapterList => {
+          this.setState({ chapterList });
+        }).catch(err => console.error(err));
+      }
+    }
   }
   handlerChapterClick = (index: number) => {
     return () => {
@@ -105,7 +110,7 @@ class Course extends React.Component<RouteComponentProps, IState> {
     return (<Fragment>
       <div className="Page home">
         <article>
-          <H2>{ (this.props.location.state as Title).title }</H2>
+          <H2>{ (this.props.location.state as Title)?.title }</H2>
           {chapterUl}
         </article>
       </div>

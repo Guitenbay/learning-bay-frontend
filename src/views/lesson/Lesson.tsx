@@ -43,11 +43,16 @@ class Lesson extends React.Component<RouteComponentProps, IState> {
     }
   }
   componentDidMount() {
-    const parsed = parse(this.props.location.search);
-    const uri = Base64.decode(parsed.uri as string);
-    this.getSectionList(uri).then(list => {
-      this.setState({ sectionList: list });
-    }).catch(err => console.error(err));
+    const search = this.props.location.search;
+    if (typeof search === 'string') {
+      const parsed = parse(search);
+      if (!!parsed.uri) {
+        const uri = Base64.decode(parsed.uri as string);
+        this.getSectionList(uri).then(list => {
+          this.setState({ sectionList: list });
+        }).catch(err => console.error(err));
+      }
+    }
   }
   handleSectionClick = (codeQuestionUri: string) => {
     return () => {
@@ -73,7 +78,7 @@ class Lesson extends React.Component<RouteComponentProps, IState> {
       />
       <div className="Page home">
         <article>
-          <H2>{ (this.props.location.state as Title).title }</H2>
+          <H2>{ (this.props.location.state as Title)?.title }</H2>
           {sections}
         </article>
       </div>
