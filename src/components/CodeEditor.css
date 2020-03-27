@@ -61,3 +61,6 @@
   width: 18px;
   left: 0;
 }
+.Logs > pre.log.output:last-child {
+  margin-bottom: 10%;
+}

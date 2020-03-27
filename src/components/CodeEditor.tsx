@@ -11,7 +11,7 @@ interface IProps {
   darkTheme: boolean
   dirs?: Array<Directory>,
   depandencies?: Array<Depandency>,
-  code?: string,
+  defaultCode?: string,
   onRunCode?: (code: string) => void
 }
 interface IState { 
@@ -112,7 +112,8 @@ class CodeEditor extends React.Component<IProps, IState> {
     }
   }
   render() {
-    const { darkTheme, code } = this.props;
+    const { darkTheme, defaultCode } = this.props;
+    this.editor?.setValue("defaultCode");
     const { showConsole, outputs } = this.state;
     const { width, height } = this.state.monacoSize;
     const logs = outputs.map((output, index) => (<pre className="log output" key={`log-${index}`}>{output}</pre>));
@@ -140,7 +141,7 @@ class CodeEditor extends React.Component<IProps, IState> {
               width={width} height={height}
               language="javascript" theme={ darkTheme ? "vs-dark": "vs-light" }
               options={this.options}
-              value={code}
+              defaultValue={defaultCode}
             />
           </div>
           <div className={ showConsole ? "ConsoleView open" : "ConsoleView"}

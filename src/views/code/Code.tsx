@@ -86,12 +86,16 @@ class Code extends React.Component<RouteComponentProps, IState> {
             <ReactMarkdown source={codeQuestion?.content} />
           </article>
           <div id="code-area" style={{height: '600px', margin: '0 auto', maxWidth: 'var(--main-width)'}}>
-            <CodeEditor ref={this.editorRef}
-              darkTheme={darkTheme}
-              dirs={dirs} depandencies={depandencies}
-              code={codeQuestion?.code}
-              onRunCode={this.handleRunCode}
-            />
+            { (typeof codeQuestion !== 'undefined')
+              // defaultCode 要设置，必须是第一次创建时设置，当组件更新时不会重新设置
+              ? (<CodeEditor ref={this.editorRef}
+                darkTheme={darkTheme}
+                dirs={dirs} depandencies={depandencies}
+                defaultCode={codeQuestion?.code || ''}
+                onRunCode={this.handleRunCode}
+              />)
+              : null
+            }
           </div>
         </div>
         <Footer />
