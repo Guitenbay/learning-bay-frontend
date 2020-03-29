@@ -8,6 +8,7 @@ import { IEditorFrame } from '../views/frame.d';
 import { blobGet } from '../utils/blob-ajax';
 import CodeEditor from './CodeEditor';
 import AudioController from './AudioController';
+import { Icon } from '@blueprintjs/core';
 
 interface IProps {
   darkTheme: boolean,
@@ -21,18 +22,6 @@ interface IState {
   position: { x: number, y: number }
 }
 
-// const dirs: Array<Directory> = [{
-//   name: 'src',
-//   files: [
-//     { name: 'index.html', icon: 'html' },
-//     { name: 'index.js', icon: 'js' },
-//   ]
-// }]
-// const depandencies: Array<Depandency> = [
-//   { name: 'react' },
-//   { name: 'react-dom' },
-// ]
-
 class VideoPlayer extends React.Component<IProps, IState> {
   private editorRef: RefObject<CodeEditor> = createRef<CodeEditor>();
   // private audioRef: RefObject<ReactPlayer> = createRef<ReactPlayer>();
@@ -40,6 +29,7 @@ class VideoPlayer extends React.Component<IProps, IState> {
   private editorData: Array<IEditorFrame> = [];
   private playArea: HTMLElement | undefined = undefined;
   private currentTime = 0;
+  private hiddenPlayClick = false;
   constructor(props: IProps) {
     super(props);
     this.state = {
@@ -108,10 +98,15 @@ class VideoPlayer extends React.Component<IProps, IState> {
     }).catch(err => console.error(err));
     this.playArea = document.querySelector('#play-area') as HTMLElement;
     this.audioElement = document.querySelector('audio') as HTMLAudioElement;
+    this.playArea.addEventListener("click", () => this.setState({ play: false }));
+  }
+  private handlePlayClick = () => {
+    this.hiddenPlayClick = true;
+    this.setState({ play: !this.state.play })
   }
   private handleAudioPlay = () => this.setState({ play: true })
+  private handleAudioPause = () => this.setState({ play: false })
   private handleAudioEnded = () => this.setState({ play: false })
-  private handlePlayClick = () => this.setState({ play: !this.state.play })
   private handleAudioSeek = (event: Event) => {
     const second = (event.target as HTMLAudioElement).currentTime;
     // 向下取一位小数 即以 0.1s 为单位
@@ -129,17 +124,21 @@ class VideoPlayer extends React.Component<IProps, IState> {
           <div id="play-area" style={{width: '100%', height: '100%'}}>
             <CodeEditor ref={this.editorRef}
               darkTheme={darkTheme}
-              // dirs={dirs} depandencies={depandencies}
             />
-            <div className="InterfaceView MarkView">
-              <button className="none" onClick={this.handlePlayClick}>Play</button>
+            <div className={ this.hiddenPlayClick ? "InterfaceView MarkView hidden" : "InterfaceView MarkView"}>
+              <button className="none" onClick={this.handlePlayClick}
+                style={{padding: '20px', borderRadius: '100px', border: 'none', cursor: 'pointer', backgroundColor: "#5e9af9"}}>
+                <Icon icon="play" iconSize={72} style={{position:'relative', right: '-2px'}} color="rgba(255, 255, 255, 0.9)" />
+              </button>
             </div>
           </div>
         </div>
         <div className="none audio">
           <AudioController audioUrl={blobAudioUrl}
             play={play}
-            onPlay={this.handleAudioPlay} onEnded={this.handleAudioEnded}
+            onPlay={this.handleAudioPlay} 
+            onPause={this.handleAudioPause}
+            onEnded={this.handleAudioEnded}
             onSeeked={lodash.debounce(this.handleAudioSeek, 100)}
           />
         </div>

@@ -9,6 +9,7 @@ import { IMouseEventData, IMouseMoveData } from '../frame.d';
 import { blobPost } from '../../utils/blob-ajax';
 import { store } from '../state';
 import CodeEditor from '../../components/CodeEditor';
+import { Button } from '@blueprintjs/core';
 
 interface IState {
   title: string,
@@ -178,7 +179,7 @@ class Record extends React.Component<{}, IState> {
           </div>
         </div>
         <div className="none ControlsView">
-          <button className="none" onClick={this.handleRecordClick}>Record</button> 
+          <Button className="none" onClick={this.handleRecordClick}>Record</Button> 
         </div>
       </div>
     );

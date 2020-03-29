@@ -140,7 +140,8 @@ body {
   /* font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif; */
-  font-family: "PingFang SC","Microsoft YaHei","微软雅黑",Arial,sans-serif;
+  /* font-family: "PingFang SC","Microsoft YaHei","微软雅黑",Arial,sans-serif; */
+  font-family: Avenir,-apple-system,BlinkMacSystemFont,Segoe UI,PingFang SC,Hiragino Sans GB,Microsoft YaHei,Helvetica Neue,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol;
   letter-spacing: 0.2pt;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

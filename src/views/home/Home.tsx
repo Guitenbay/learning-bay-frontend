@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import './Home.css';
 import Footer from '../../components/Footer';
-import { Card, Elevation, Button, H5 } from '@blueprintjs/core';
+import { Card, Elevation, Button, H5, OL } from '@blueprintjs/core';
 import Axios from 'axios';
 import { fusekiURL } from '../config';
 
@@ -47,11 +47,11 @@ class Home extends React.Component<RouteComponentProps, IState> {
           {course.title.toUpperCase()}</Link>
         </H5>
         <p>章节：</p>
-        <ul>
-          { (course.firstChapter === undefined) ? null : (<li>1. {course.firstChapter}</li>) }
-          { (course.secondChapter === undefined) ? null : (<li>2. {course.secondChapter}</li>) }
-          { (course.thirdChapter === undefined) ? null : (<li>3. {course.thirdChapter}</li>) }
-        </ul>
+        <OL>
+          { (course.firstChapter === undefined) ? null : (<li>{course.firstChapter}</li>) }
+          { (course.secondChapter === undefined) ? null : (<li>{course.secondChapter}</li>) }
+          { (course.thirdChapter === undefined) ? null : (<li>{course.thirdChapter}</li>) }
+        </OL>
         <div style={{textAlign:'right'}}>
           <Button rightIcon="arrow-right" minimal>Go</Button>
         </div>

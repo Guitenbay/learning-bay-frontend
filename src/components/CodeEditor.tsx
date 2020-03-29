@@ -1,5 +1,6 @@
 import React, { createRef, RefObject } from "react";
 import MonacoEditor from "react-monaco-editor";
+import * as monacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
 import { v5 as uuidv5 } from 'uuid';
 import { Directory, Depandency } from "./sidebar.d";
 import { IResizeEntry, ResizeSensor, Divider, Button, Tree, ITreeNode, H5 } from "@blueprintjs/core";
@@ -11,7 +12,7 @@ interface IProps {
   darkTheme: boolean
   dirs?: Array<Directory>,
   depandencies?: Array<Depandency>,
-  defaultCode?: string,
+  defaultCode?: string | undefined,
   onRunCode?: (code: string) => void
 }
 interface IState { 
@@ -32,7 +33,7 @@ class CodeEditor extends React.Component<IProps, IState> {
     extraEditorClassName: "CodeEditor"
   };
   private editorRef: RefObject<MonacoEditor> = createRef<MonacoEditor>();
-  public editor = this.editorRef.current?.editor;
+  public editor: monacoEditor.editor.IStandaloneCodeEditor | undefined = undefined;
   constructor(props: IProps) {
     super(props);
     this.state = {
@@ -53,6 +54,7 @@ class CodeEditor extends React.Component<IProps, IState> {
     this.client.on('code-exit', () => {
       this.setState({ outputs: this.state.outputs.concat([""]) });
     });
+    this.editor = this.editorRef.current?.editor;
   }
   componentWillUnmount() {
     if (this.client.connected) this.client.disconnect();
@@ -113,7 +115,6 @@ class CodeEditor extends React.Component<IProps, IState> {
   }
   render() {
     const { darkTheme, defaultCode } = this.props;
-    this.editor?.setValue("defaultCode");
     const { showConsole, outputs } = this.state;
     const { width, height } = this.state.monacoSize;
     const logs = outputs.map((output, index) => (<pre className="log output" key={`log-${index}`}>{output}</pre>));

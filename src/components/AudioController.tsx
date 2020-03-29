@@ -4,7 +4,9 @@ import './AudioController.css'
 import { formatTime } from "../utils/methods";
 
 interface IProps { audioUrl: string, play: boolean, 
-  onEnded: () => void, onPlay: () => void, onSeeked: ((event: Event) => void) }
+  onEnded: () => void, onPlay: () => void, onSeeked: ((event: Event) => void)
+  onPause: () => void
+}
 interface IState { 
   currentTime: string, volume: number, showSlider: boolean, percent: number
 }
@@ -27,6 +29,7 @@ class AudioController extends React.Component<IProps, IState> {
       });
     })
     this.audio.addEventListener('play', () => this.props.onPlay());
+    this.audio.addEventListener('pause', () => this.props.onPause());
     this.audio.addEventListener('ended', () => this.props.onEnded());
     this.audio.addEventListener('seeked', event => this.props.onSeeked(event));
     const progress = document.querySelector('.Timeline > .track') as HTMLElement;

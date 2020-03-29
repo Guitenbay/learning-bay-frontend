@@ -6,3 +6,19 @@
   -moz-box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.33);
   box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.33);
 }
+
+.recommend-slider .slick-next:before,
+.recommend-slider .slick-prev:before {
+  color: #000;
+}
+.recommend-slider .slick-slide > div {
+  text-align: center;
+  padding: 1px;
+}
+.recommend-card {
+  padding: 2%;
+  margin: 10px;
+  max-width: calc(var(--main-width) / 4);
+  min-height: 150px;
+  text-align: initial;
+}

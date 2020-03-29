@@ -9,4 +9,9 @@ function formatTime(value: number){
 　　let second = (interval % 60).toString().padStart(2, '0')
 　　return `${minute}:${second}`
 }
-export { imitateMouseEvent, formatTime }
+function firstUpperCase(str: string) {
+  return str.replace(/\b(\w)(\w*)/g, ($0, $1, $2) => {
+    return $1.toUpperCase() + $2
+  })
+}
+export { imitateMouseEvent, formatTime, firstUpperCase }

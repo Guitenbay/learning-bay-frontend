@@ -10,6 +10,7 @@ import Lesson from './lesson/Lesson';
 import Login from './login/Login';
 import Signup from './signup/Signup';
 import Code from './code/Code';
+import UserState from './user-state/UserState';
 import { store, SET_THEME, IStoreState, SET_USER } from './state'
 import Axios from 'axios';
 import { baseURL } from './config';
@@ -88,7 +89,7 @@ class App extends React.Component<{}, IAPPState> {
                     <Menu>
                       <Menu.Item disabled style={{textAlign: "center"}} text={`以 ${username} 身份登录`} />
                       <Menu.Item icon="clipboard" href="/record" text="你的个人信息" />
-                      <Menu.Item icon="layout" href="/h" text="你的学习状态" />
+                      <Menu.Item icon="layout" href="/user-state" text="你的学习状态" />
                       <Menu.Divider />
                       <Menu.Item text="登出" icon="log-out" onClick={this.handleLogout} />
                     </Menu>
@@ -111,6 +112,7 @@ class App extends React.Component<{}, IAPPState> {
               <Route path="/course" component={ Course } />
               <Route path="/lesson" component={ Lesson } />
               <Route path="/code" component={ Code }></Route>
+              <Route path="/user-state" component={ UserState }></Route>
               <Route path="/error"><div>404 Oops...</div></Route>
               <Route path="*"><Redirect to="/error" /></Route>
             </Switch>
