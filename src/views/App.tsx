@@ -88,7 +88,7 @@ class App extends React.Component<{}, IAPPState> {
                     <Button icon="user" minimal />
                     <Menu>
                       <Menu.Item disabled style={{textAlign: "center"}} text={`以 ${username} 身份登录`} />
-                      <Menu.Item icon="clipboard" href="/record" text="你的个人信息" />
+                      {/* <Menu.Item icon="clipboard" href="/record" text="你的个人信息" /> */}
                       <Menu.Item icon="layout" href="/user-state" text="你的学习状态" />
                       <Menu.Divider />
                       <Menu.Item text="登出" icon="log-out" onClick={this.handleLogout} />

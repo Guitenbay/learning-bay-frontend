@@ -35,7 +35,9 @@ type CodeQuestion = {
 type Lesson = { uri: string, title: string }
 interface IState {
   codeQuestion: CodeQuestion | undefined,
-  recommend: { review: boolean, list: Array<Lesson> } | undefined
+  recommendList: Array<Lesson>,
+  reviewList: Array<Lesson>,
+  showNoneRecommend: boolean
 }
 
 class Code extends React.Component<RouteComponentProps, IState> {
@@ -49,16 +51,38 @@ class Code extends React.Component<RouteComponentProps, IState> {
     super(props);
     this.state = {
       codeQuestion: undefined,
-      recommend: undefined
+      recommendList: [],
+      reviewList: [],
+      showNoneRecommend: false
     }
   }
   async getCodeQuestion(uri: string) {
-    const resp = await Axios.get(fusekiURL+"/code-question", { params: { uri} });
+    const resp = await Axios.get(fusekiURL+"/code-question", { params: { uri } });
     const { res, data } = resp.data;
     if (res) {
       return data;
     } else {
       return undefined;
+    }
+  }
+  async getRecommend() {
+    const resp = await Axios.get(baseURL+"/recommend");
+    const { res, data } = resp.data;
+    if (res) {
+      return data;
+    } else {
+      addErrorToast("获取推荐数据失败");
+      return [];
+    }
+  }
+  async getReviewRecommend() {
+    const resp = await Axios.get(baseURL+"/recommend/review");
+    const { res, data } = resp.data;
+    if (res) {
+      return data;
+    } else {
+      addErrorToast("获取推荐复习数据失败");
+      return [];
     }
   }
   componentDidMount() {
@@ -80,42 +104,47 @@ class Code extends React.Component<RouteComponentProps, IState> {
     ).then(resp => {
       const { res, data } = resp.data;
       if (res) {
-        this.setState({ recommend: { review: !data.result, list: data.list } });
         if (data.result) {
           addSuccessToast('代码正确')
         } else {
           addErrorToast('代码与要求不符')
         }
+        return Promise.all([this.getRecommend(), this.getReviewRecommend()]);
       } else {
         addErrorToast(data);
       }
+    }).then((lists: any) => {
+      if (lists[0].length === 0 && lists[1].length === 0) {
+        this.setState({ showNoneRecommend: true });
+      }
+      this.setState({ recommendList: lists[0], reviewList: lists[1] });
     }).catch(err => console.error(err));
+  }
+  createRecommendUI = (title: string, list: Array<Lesson>) => {
+    if (list.length === 0) return null;
+    return (<div>
+      <h2 style={{textAlign: 'center'}}>{ title }</h2>
+      <Slider {...this.settings} className="recommend-slider"
+        slidesToShow={Math.min(4, list.length)}
+        slidesToScroll={Math.min(4, list.length)}
+      >
+        { list.map(lesson => (
+            <Card key={lesson.uri} className="recommend-card"
+              onClick={() => { this.props.history.push({ pathname: '/lesson', search: `?uri=${Base64.encode(lesson.uri)}`, state: {title: lesson.title} }) }}>
+              <H5><Link to={{pathname: '/lesson', search: `?uri=${Base64.encode(lesson.uri)}`, state: {title: lesson.title}}}>
+                {lesson.title.toUpperCase()}</Link>
+              </H5>
+              <div style={{textAlign: 'right', marginTop: '55px'}}>
+                <Button style={{position: 'relative', bottom: '-10px', right: '-10px'}} rightIcon="arrow-right" minimal>Go</Button>
+              </div>
+            </Card>
+          )) }
+      </Slider>
+    </div>)
   }
   render() {
     const { darkTheme } = store.getState();
-    const { codeQuestion, recommend } = this.state;
-    let recommendUI = null;
-    if (typeof recommend !== 'undefined' && recommend.list.length > 0) {
-      recommendUI = (<div>
-        <h2 style={{textAlign: 'center'}}>{ (recommend.review) ? '经过分析您的学习状态，推荐您复习' : '经过分析您的学习状态，推荐您学习' }</h2>
-        <Slider {...this.settings} className="recommend-slider"
-          slidesToShow={Math.min(4, recommend.list.length)}
-          slidesToScroll={Math.min(4, recommend.list.length)}
-        >
-          { recommend.list.map(lesson => (
-              <Card key={lesson.uri} className="recommend-card"
-                onClick={() => { this.props.history.push({ pathname: '/lesson', search: `?uri=${Base64.encode(lesson.uri)}`, state: {title: lesson.title} }) }}>
-                <H5><Link to={{pathname: '/lesson', search: `?uri=${Base64.encode(lesson.uri)}`, state: {title: lesson.title}}}>
-                  {lesson.title.toUpperCase()}</Link>
-                </H5>
-                <div style={{textAlign: 'right', marginTop: '55px'}}>
-                  <Button style={{position: 'relative', bottom: '-10px', right: '-10px'}} rightIcon="arrow-right" minimal>Go</Button>
-                </div>
-              </Card>
-            )) }
-        </Slider>
-      </div>)
-    }
+    const { codeQuestion, recommendList, reviewList, showNoneRecommend } = this.state;
     return (
       <Fragment>
         <div className="Page">
@@ -136,18 +165,11 @@ class Code extends React.Component<RouteComponentProps, IState> {
             }
           </div>
           <article>
-            { recommendUI }
-            {/* <Slider {...this.settings}
-              slidesToShow={4}
-              slidesToScroll={4}
-            >
-              <div className="recommend-card"><h3>1</h3></div>
-              <div className="recommend-card"><h3>1</h3></div>
-              <div className="recommend-card"><h3>1</h3></div>
-              <div className="recommend-card"><h3>1</h3></div>
-              <div className="recommend-card"><h3>1</h3></div>
-              <div className="recommend-card"><h3>1</h3></div>
-            </Slider> */}
+            { this.createRecommendUI('经过分析您的学习状态，推荐您复习课时', reviewList) }
+            { this.createRecommendUI('经过分析您的学习状态，推荐您学习课时', recommendList) }
+            { (showNoneRecommend)
+              ? (<h2 style={{textAlign: 'center'}}>您的学习状态已达标，没有需要推荐学习的课时了</h2>) : null
+            }
           </article>
         </div>
         <Footer />

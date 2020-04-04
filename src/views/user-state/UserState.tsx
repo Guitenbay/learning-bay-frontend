@@ -92,19 +92,20 @@ class UserState extends React.Component<RouteComponentProps, IState> {
       animate: true,
       defaultNode: {
         // type: 'rect',
-        size: 80,
+        size: 70,
         // size: [130, 40],
         style: {
           lineWidth: 8,
         },
       },
       defaultEdge: {
-        size: 2,
+        size: 1,
         color: '#e0e0e0',
         style: {
           endArrow: {
-            path: 'M 0,0 L -8,4 L -8,-4 Z',
+            path: 'M 0,0 L -8,4 L -8,-4 Z'
           },
+          fill: '#e0e0e0'
         },
       },
       renderer: 'svg'
