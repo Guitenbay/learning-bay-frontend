@@ -6,23 +6,10 @@ import { Link, RouteComponentProps } from 'react-router-dom';
 import Footer from '../../components/Footer';
 import { fusekiURL } from '../config';
 import './Course.css'
+import { Chapter, Lesson } from '../model.d'
 
 type Title = {
   title: string
-}
-
-type Lesson = {
-  uri: string,
-  title: string,
-  sequence: number,
-}
-
-type Chapter = {
-  uri: string,
-  show: boolean,
-  title: string,
-  sequence: number,
-  lessons?: Array<Lesson>
 }
 
 interface IState {
@@ -89,7 +76,7 @@ class Course extends React.Component<RouteComponentProps, IState> {
       if (typeof lessons === 'undefined') return;
       const list = lessons.map(lesson => (
         <li key={lesson.uri}>
-          <Link to={{ pathname: '/lesson', search: `?uri=${Base64.encode(lesson.uri)}`, state: {title: lesson.title} }}>
+          <Link to={{ pathname: '/lesson', search: `?uri=${Base64.encode(lesson.uri)}`, state: {title: lesson.title, mediaUri: lesson.mediaUri} }}>
             {lesson.title}
           </Link>
         </li>

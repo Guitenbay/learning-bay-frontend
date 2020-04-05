@@ -8,29 +8,24 @@ import { RouteComponentProps } from 'react-router-dom';
 import { H3, H2, Button } from '@blueprintjs/core';
 import ReactMarkdown from 'react-markdown';
 import Axios from 'axios';
+import { Section } from '../model.d'
 
-type Title = {
-  title: string
-}
-
-type Section = {
-  uri: string,
+type LessonType = {
   title: string,
-  sequence: number,
-  content: string,
-  codeQuestionUri: string,
-  kElementUri: string
+  mediaUri: string
 }
 
 interface IState {
-  sectionList: Array<Section>
+  sectionList: Array<Section>,
+  mediaFilename: string
 }
 
 class Lesson extends React.Component<RouteComponentProps, IState> {
   constructor(props: RouteComponentProps) {
     super(props);
     this.state = {
-      sectionList: []
+      sectionList: [],
+      mediaFilename: ''
     }
   }
   async getSectionList(uri: string) {
@@ -40,6 +35,15 @@ class Lesson extends React.Component<RouteComponentProps, IState> {
       return (data as Array<Section>).sort((prev, last) => prev.sequence - last.sequence);
     } else {
       return [];
+    }
+  }
+  async getMediaMaterial(uri: string) {
+    const resp = await Axios.get(fusekiURL+"/media-material", { params: { uri } });
+    const { res, data } = resp.data;
+    if (res) {
+      return data?.filename;
+    } else {
+      return '';
     }
   }
   componentDidMount() {
@@ -52,6 +56,12 @@ class Lesson extends React.Component<RouteComponentProps, IState> {
           this.setState({ sectionList: list });
         }).catch(err => console.error(err));
       }
+      const mediaUri = (this.props.location.state as LessonType).mediaUri;
+      if (!!mediaUri) {
+        this.getMediaMaterial(mediaUri).then(filename => {
+          this.setState({ mediaFilename: filename });
+        }).catch(err => console.error(err));
+      }
     }
   }
   handleSectionClick = (codeQuestionUri: string) => {
@@ -61,7 +71,7 @@ class Lesson extends React.Component<RouteComponentProps, IState> {
   }
   render() {
     const { darkTheme } = store.getState();
-    const { sectionList } = this.state;
+    const { sectionList, mediaFilename } = this.state;
     const sections = sectionList.map(section => (
       <div key={section.uri}>
         <H3>{`${section.sequence}. ${section.title}`}</H3>
@@ -71,14 +81,17 @@ class Lesson extends React.Component<RouteComponentProps, IState> {
       </div>
     ));
     return (<Fragment>
-      <VideoPlayer
-        darkTheme={darkTheme}
-        videoURL={`${baseURL}/video/1.mmcv`}
-        audioURL={`${baseURL}/audio/1.webm`}
-      />
+      { (mediaFilename !== '') 
+        ? (<VideoPlayer
+          darkTheme={darkTheme}
+          videoURL={`${baseURL}/video/${mediaFilename}.mmcv`}
+          audioURL={`${baseURL}/audio/${mediaFilename}.webm`}
+        />)
+        : null
+      }
       <div className="Page home">
         <article>
-          <H2>{ (this.props.location.state as Title)?.title }</H2>
+          <H2>{ (this.props.location.state as LessonType).title }</H2>
           {sections}
         </article>
       </div>

@@ -5,14 +5,7 @@ import Footer from '../../components/Footer';
 import { Card, Elevation, Button, H5, OL } from '@blueprintjs/core';
 import Axios from 'axios';
 import { fusekiURL } from '../config';
-
-type Course = {
-  uri: string,
-  title: string,
-  firstChapter?: string,
-  secondChapter?: string,
-  thirdChapter?: string,
-}
+import { Course } from '../model.d'
 
 interface IState {
   courseList: Array<Course>
