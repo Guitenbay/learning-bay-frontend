@@ -1,6 +1,5 @@
 footer {
   font-size: 8pt;
-  padding: var(--page-padding);
   padding-top: 0;
   overflow:hidden; /* 触发 BFC，防止 margin 塌陷 */
 }

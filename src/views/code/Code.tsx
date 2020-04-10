@@ -6,10 +6,12 @@ import { Directory, Depandency } from '../../components/sidebar.d';
 import './Code.css'
 import { RouteComponentProps, Link } from 'react-router-dom';
 import { Axios, fusekiURL, baseURL } from '../config';
-import { H2, Card, H5, Button } from '@blueprintjs/core';
+import { H2, Card, H5, Button, Icon } from '@blueprintjs/core';
 import ReactMarkdown from 'react-markdown';
 import { addErrorToast, addSuccessToast } from '../toaster';
 import Slider from 'react-slick';
+import CodeBlock from '../CodeBlock';
+import '../../assets/markdown.css'
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
@@ -148,22 +150,30 @@ class Code extends React.Component<RouteComponentProps, IState> {
     return (
       <Fragment>
         <div className="Page">
-          <article>
-            <H2>{codeQuestion?.title}</H2>
-            <ReactMarkdown source={codeQuestion?.content} />
-          </article>
-          <div id="code-area" style={{height: '600px', margin: '50px auto', maxWidth: 'var(--main-width)'}}>
-            { (typeof codeQuestion !== 'undefined')
+          { (typeof codeQuestion !== 'undefined')
               // defaultCode 要设置，必须是第一次创建时设置，当组件更新时不会重新设置
-              ? (<CodeEditor ref={this.editorRef}
-                darkTheme={darkTheme}
-                dirs={dirs} depandencies={depandencies}
-                defaultCode={codeQuestion?.code || ''}
-                onRunCode={this.handleRunCode}
-              />)
+              ? (<Fragment>
+                  <article>
+                    <H2 className="title-with-back">
+                      <Button minimal className="back"
+                        onClick={() => this.props.history.goBack()}
+                      ><Icon icon="arrow-left" iconSize={25} /></Button>
+                      { codeQuestion?.title }</H2>
+                    <ReactMarkdown source={Base64.decode(codeQuestion?.content as string)} className="markdown-body question"
+                      renderers={{ code: CodeBlock }}
+                    />
+                  </article>
+                  <div id="code-area" style={{height: '600px', margin: '50px auto', maxWidth: 'var(--main-width)'}}>
+                    <CodeEditor ref={this.editorRef}
+                      darkTheme={darkTheme}
+                      dirs={dirs} depandencies={depandencies}
+                      defaultCode={codeQuestion?.code || ''}
+                      onRunCode={this.handleRunCode}
+                    />
+                  </div>
+                </Fragment>)
               : null
-            }
-          </div>
+          }
           <article>
             { this.createRecommendUI('经过分析您的学习状态，推荐您复习课时', reviewList) }
             { this.createRecommendUI('经过分析您的学习状态，推荐您学习课时', recommendList) }

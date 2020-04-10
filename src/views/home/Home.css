@@ -1,7 +1,3 @@
-.Page {
-  padding: var(--page-padding);
-}
-
 article > div {
   margin-top: 20px;
 }

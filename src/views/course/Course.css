@@ -6,3 +6,46 @@
   margin: 10px 0;
   color: var(--uxa-link-color);
 }
+
+ul > li {
+  line-height: 20pt;
+}
+
+.title-with-back {
+  position: relative;
+}
+
+.title-with-back > .back {
+  position: absolute;
+  left: -50px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.Page.code {
+  padding-top: 0px;
+}
+article {
+  margin-top: 10px;
+}
+.code-bg {
+  position: relative;
+  overflow: hidden;
+  height: 350px;
+}
+.code-bg > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.code-bg > .img-mark {
+  z-index: 2;
+  position: absolute;
+  bottom: -1rem;
+  width: 100%;
+  height: 30%;
+  -webkit-transform: skewY(2.5deg);
+  transform: skewY(2.5deg);
+  -webkit-transform-origin: bottom left;
+  transform-origin: bottom left;
+}

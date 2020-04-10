@@ -61,8 +61,8 @@ class App extends React.Component<{}, IAPPState> {
         <Toaster position="bottom-right"
           ref={toastRef} />
         <Router history={history}>
-          <header style={{flex: "none"}}>
-            <Navbar className="flex center" style={{position: "sticky", top: "0"}}>
+          <header style={{flex: "none", zIndex: 660}}>
+            <Navbar className="flex center" style={{position: "fixed", top: "0"}}>
               <Navbar.Group style={{marginLeft: 'auto', width: '120px'}}>
                 <Navbar.Heading>LearningBay</Navbar.Heading>
               </Navbar.Group>
@@ -102,7 +102,7 @@ class App extends React.Component<{}, IAPPState> {
           {/* 按从上往下顺序匹配
               exact 表示精确匹配
           */}
-          <main style={{flex: "auto"}}>
+          <main style={{flex: "auto", marginTop: "50px"}}>
             <Switch>
               <Route exact path="/" component={ Home } />
               <Route path="/login" component={ Login } />

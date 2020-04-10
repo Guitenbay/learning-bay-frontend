@@ -16,6 +16,7 @@ export type Lesson = {
   uri: string,
   title: string,
   mediaUri: string,
+  codeQuestionUri: string,
   sequence: number,
 }
 export type Section = {
@@ -23,6 +24,5 @@ export type Section = {
   title: string,
   sequence: number,
   content: string,
-  codeQuestionUri: string,
   kElementUri: string
 }

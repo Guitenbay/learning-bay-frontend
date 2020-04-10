@@ -5,31 +5,44 @@ import VideoPlayer from '../../components/VideoPlayer';
 import { store } from '../state';
 import { parse } from 'query-string';
 import { RouteComponentProps } from 'react-router-dom';
-import { H3, H2, Button } from '@blueprintjs/core';
-import ReactMarkdown from 'react-markdown';
+import { H1, Button, Icon, H2, Intent } from '@blueprintjs/core';
 import Axios from 'axios';
-import { Section } from '../model.d'
-
-type LessonType = {
-  title: string,
-  mediaUri: string
-}
+import { Section, Lesson } from '../model.d';
+import ReactMarkdown from 'react-markdown';
+import '../../assets/markdown.css'
+import CodeBlock from '../CodeBlock';
+import './Lesson.css'
 
 interface IState {
   sectionList: Array<Section>,
-  mediaFilename: string
+  mediaFilename: string,
+  title: string,
+  codeQuestionUri: string,
+  skeleton: boolean
 }
 
-class Lesson extends React.Component<RouteComponentProps, IState> {
+class LessonPage extends React.Component<RouteComponentProps, IState> {
   constructor(props: RouteComponentProps) {
     super(props);
     this.state = {
       sectionList: [],
-      mediaFilename: ''
+      mediaFilename: '',
+      title: '',
+      codeQuestionUri: '',
+      skeleton: true
+    }
+  }
+  async getLesson(uri: string) {
+    const resp = await Axios.get(fusekiURL+"/lesson", { params: { uri } });
+    const { res, data } = resp.data;
+    if (res) {
+      return data;
+    } else {
+      return undefined;
     }
   }
   async getSectionList(uri: string) {
-    const resp = await Axios.get(fusekiURL+"/section/all", { params: { uri } });
+    const resp = await Axios.get(fusekiURL+"/section/all/lesson", { params: { uri } });
     const { res, data } = resp.data;
     if (res) {
       return (data as Array<Section>).sort((prev, last) => prev.sequence - last.sequence);
@@ -52,32 +65,47 @@ class Lesson extends React.Component<RouteComponentProps, IState> {
       const parsed = parse(search);
       if (!!parsed.uri) {
         const uri = Base64.decode(parsed.uri as string);
+        this.getLesson(uri).then(lesson => {
+          if (!!lesson) {
+            this.setState({ 
+              title: (lesson as Lesson).title,
+              codeQuestionUri: (lesson as Lesson).codeQuestionUri });
+          }
+          return (lesson as Lesson).mediaUri;
+        }).then(mediaUri => {
+          if (!!mediaUri && mediaUri !== 'null') {
+            return this.getMediaMaterial(mediaUri)
+          }
+        }).then(filename => {
+          if (!!filename) {
+            this.setState({ mediaFilename: filename });
+          }
+        }).catch(err => console.error(err));
         this.getSectionList(uri).then(list => {
           this.setState({ sectionList: list });
         }).catch(err => console.error(err));
       }
-      const mediaUri = (this.props.location.state as LessonType).mediaUri;
-      if (!!mediaUri) {
-        this.getMediaMaterial(mediaUri).then(filename => {
-          this.setState({ mediaFilename: filename });
-        }).catch(err => console.error(err));
-      }
     }
+    setTimeout(() => this.setState({skeleton: false}), 800);
   }
-  handleSectionClick = (codeQuestionUri: string) => {
+  handleCodeQuestionClick = (codeQuestionUri: string) => {
     return () => {
       this.props.history.push('/code', { uri: codeQuestionUri });
     }
   }
   render() {
     const { darkTheme } = store.getState();
-    const { sectionList, mediaFilename } = this.state;
+    const { sectionList, mediaFilename, title, codeQuestionUri, skeleton } = this.state;
     const sections = sectionList.map(section => (
-      <div key={section.uri}>
-        <H3>{`${section.sequence}. ${section.title}`}</H3>
+      <div key={section.uri} className="section">
+        {/* eslint-disable-next-line */}
+        <H2 className={skeleton ? "bp3-skeleton": ""}><a href="#">¶</a>{`${section.title}`}</H2>
         {/* <p>{section.content}</p> */}
-        <ReactMarkdown source={section.content} />
-        <Button icon="hand" intent="success" text="试一试" onClick={this.handleSectionClick(section.codeQuestionUri)} />
+        <ReactMarkdown source={Base64.decode(section.content)}
+          className={skeleton ? "bp3-skeleton markdown-body": "markdown-body"}
+          renderers={{ code: CodeBlock }}
+        />
+        {/* <Button icon="hand" intent="success" text="试一试" onClick={this.handleCodeQuestionClick(section.codeQuestionUri)} /> */}
       </div>
     ));
     return (<Fragment>
@@ -89,10 +117,29 @@ class Lesson extends React.Component<RouteComponentProps, IState> {
         />)
         : null
       }
-      <div className="Page home">
+      <div className="Page lesson">
         <article>
-          <H2>{ (this.props.location.state as LessonType).title }</H2>
+          <H1 className={ skeleton ? "title-with-back bp3-skeleton" : "title-with-back"}>
+            <Button minimal className="back"
+              onClick={() => this.props.history.go(-1)}
+            ><Icon icon="arrow-left" iconSize={25} /></Button>
+            { title }</H1>
           {sections}
+          {
+            (!codeQuestionUri || !codeQuestionUri.startsWith('http://biki.wiki/learning-bay')) 
+            ? (<Button
+                className={skeleton ? "bp3-skeleton": ""}
+                intent={Intent.SUCCESS}
+                icon="confirm"
+                onClick={() => console.log("打卡")}
+              >学完打卡</Button>)
+            : (<Button
+                className={skeleton ? "bp3-skeleton": ""}
+                intent={Intent.PRIMARY}
+                icon="confirm"
+                onClick={this.handleCodeQuestionClick(codeQuestionUri)}
+              >学完打卡并测试</Button>)
+          }
         </article>
       </div>
       <Footer />
@@ -100,4 +147,4 @@ class Lesson extends React.Component<RouteComponentProps, IState> {
   }
 }
 
-export default Lesson;
+export default LessonPage;

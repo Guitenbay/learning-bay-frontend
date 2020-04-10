@@ -29,6 +29,10 @@ a:hover { color: var(--uxa-link-hover-color) }
   max-width: 100%; */
 }
 
+.Page, footer {
+  padding: var(--page-padding) calc(var(--page-padding) + 20px);
+}
+
 article {
   margin: 20px auto;
   max-width: var(--main-width);

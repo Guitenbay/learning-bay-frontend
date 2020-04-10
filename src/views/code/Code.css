@@ -22,3 +22,19 @@
   min-height: 150px;
   text-align: initial;
 }
+.question {
+  padding: 0 20px;
+}
+.question::before {
+  content: "Q:";
+  font-family: Source Code Pro;
+  font-size: 18pt;
+  font-weight: bold;
+  position: relative;
+  left: -16px;
+  padding: 3px;
+  margin-bottom: 8px;
+  line-height: 5pt;
+  display: inline-block;
+  border-bottom: solid 8px var(--uxa-link-color);
+}

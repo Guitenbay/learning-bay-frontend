@@ -1,0 +1,37 @@
+article {
+  font-size: 12pt;
+  line-height: 20pt;
+}
+
+h1, h2 {
+  display: inline-block;
+}
+
+.section {
+  margin: 30px 0;
+  padding: 0 1px;
+}
+
+.section > h2 > a {
+  float: left;
+  margin-left: -20px;
+  opacity: 0;
+  cursor: pointer;
+  color: #409eff;
+  text-decoration: none;
+}
+
+.section > h2:hover > a {
+  opacity: 0.6;
+}
+
+.title-with-back {
+  position: relative;
+}
+
+.title-with-back > .back {
+  position: absolute;
+  left: -50px;
+  top: 50%;
+  transform: translateY(-50%);
+}
