@@ -14,10 +14,10 @@
 .recommend-slider .slick-slide > div {
   text-align: center;
   padding: 1px;
+  margin: 10px;
 }
 .recommend-card {
-  padding: 2%;
-  margin: 10px;
+  padding: 25px;
   max-width: calc(var(--main-width) / 4);
   min-height: 150px;
   text-align: initial;
@@ -31,7 +31,7 @@
   font-size: 18pt;
   font-weight: bold;
   position: relative;
-  left: -16px;
+  left: -14px;
   padding: 3px;
   margin-bottom: 8px;
   line-height: 5pt;

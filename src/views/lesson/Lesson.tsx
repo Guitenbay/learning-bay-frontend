@@ -12,6 +12,7 @@ import ReactMarkdown from 'react-markdown';
 import '../../assets/markdown.css'
 import CodeBlock from '../CodeBlock';
 import './Lesson.css'
+import { addSuccessToast, addErrorToast } from '../toaster';
 
 interface IState {
   sectionList: Array<Section>,
@@ -88,10 +89,20 @@ class LessonPage extends React.Component<RouteComponentProps, IState> {
     }
     setTimeout(() => this.setState({skeleton: false}), 800);
   }
-  handleCodeQuestionClick = (codeQuestionUri: string) => {
-    return () => {
-      this.props.history.push('/code', { uri: codeQuestionUri });
-    }
+  // 打卡
+  handlePunchInClick = (codeQuestionUri: string = '') => {
+    const knowledgeStates = this.state.sectionList.map(({ kElementUri }) => ({ uri: kElementUri, state: 1 }));
+    Axios.post(baseURL+"/user/punch-in", { knowledgeStates }, {withCredentials: true}).then(resp => {
+      const { res, data } = resp.data;
+      if (res) {
+        addSuccessToast(`打卡成功！${data || ''}`);
+        if (codeQuestionUri !== '') {
+          this.props.history.push('/code', { uri: codeQuestionUri });
+        }
+      } else {
+        addErrorToast(`打卡失败…${data || ''}`);
+      }
+    });
   }
   render() {
     const { darkTheme } = store.getState();
@@ -131,13 +142,13 @@ class LessonPage extends React.Component<RouteComponentProps, IState> {
                 className={skeleton ? "bp3-skeleton": ""}
                 intent={Intent.SUCCESS}
                 icon="confirm"
-                onClick={() => console.log("打卡")}
+                onClick={() => this.handlePunchInClick()}
               >学完打卡</Button>)
             : (<Button
                 className={skeleton ? "bp3-skeleton": ""}
                 intent={Intent.PRIMARY}
                 icon="confirm"
-                onClick={this.handleCodeQuestionClick(codeQuestionUri)}
+                onClick={() => this.handlePunchInClick(codeQuestionUri)}
               >学完打卡并测试</Button>)
           }
         </article>

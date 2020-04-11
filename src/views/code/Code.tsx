@@ -14,6 +14,7 @@ import CodeBlock from '../CodeBlock';
 import '../../assets/markdown.css'
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { CodeQuestion, Lesson } from '../model';
 
 const dirs: Array<Directory> = [{
   name: 'src',
@@ -26,15 +27,6 @@ const depandencies: Array<Depandency> = [
   { name: 'react' },
   { name: 'react-dom' },
 ]
-type CodeQuestion = {
-  title: string,
-  code?: string,
-  content: string,
-  creator: string,
-  date: string
-  kElementUris: Array<string>
-}
-type Lesson = { uri: string, title: string }
 interface IState {
   codeQuestion: CodeQuestion | undefined,
   recommendList: Array<Lesson>,
@@ -68,7 +60,8 @@ class Code extends React.Component<RouteComponentProps, IState> {
     }
   }
   async getRecommend() {
-    const resp = await Axios.get(baseURL+"/recommend");
+    const courseUri = this.state.codeQuestion?.courseUri;
+    const resp = await Axios.get(baseURL+"/recommend", { params: { courseUri } });
     const { res, data } = resp.data;
     if (res) {
       return data;
@@ -78,7 +71,8 @@ class Code extends React.Component<RouteComponentProps, IState> {
     }
   }
   async getReviewRecommend() {
-    const resp = await Axios.get(baseURL+"/recommend/review");
+    const courseUri = this.state.codeQuestion?.courseUri;
+    const resp = await Axios.get(baseURL+"/recommend/review", { params: { courseUri } });
     const { res, data } = resp.data;
     if (res) {
       return data;
@@ -101,7 +95,7 @@ class Code extends React.Component<RouteComponentProps, IState> {
   }
   handleRunCode = (code: string) => {
     Axios.post(baseURL+"/code/analyse", 
-      { code, testFilename: '1.test' }, 
+      { code, testFilename: this.state.codeQuestion?.testSetFilename }, 
       { headers: { 'Context-Type': 'application/json' }, withCredentials: true }
     ).then(resp => {
       const { res, data } = resp.data;
@@ -167,7 +161,7 @@ class Code extends React.Component<RouteComponentProps, IState> {
                     <CodeEditor ref={this.editorRef}
                       darkTheme={darkTheme}
                       dirs={dirs} depandencies={depandencies}
-                      defaultCode={codeQuestion?.code || ''}
+                      defaultCode={Base64.decode(codeQuestion?.code || '')}
                       onRunCode={this.handleRunCode}
                     />
                   </div>
@@ -176,7 +170,7 @@ class Code extends React.Component<RouteComponentProps, IState> {
           }
           <article>
             { this.createRecommendUI('经过分析您的学习状态，推荐您复习课时', reviewList) }
-            { this.createRecommendUI('经过分析您的学习状态，推荐您学习课时', recommendList) }
+            { this.createRecommendUI('经过分析您的学习状态，推荐您接下来学习课时', recommendList) }
             { (showNoneRecommend)
               ? (<h2 style={{textAlign: 'center'}}>您的学习状态已达标，没有需要推荐学习的课时了</h2>) : null
             }

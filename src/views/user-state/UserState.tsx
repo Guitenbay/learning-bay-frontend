@@ -1,6 +1,6 @@
 import React, { Fragment, RefObject, createRef } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { Popover, Position, Button, Menu, ButtonGroup } from '@blueprintjs/core';
+import { Popover, Position, Button, Menu, ButtonGroup, Icon } from '@blueprintjs/core';
 import G6, { Graph } from '@antv/g6';
 import { Axios, fusekiURL, baseURL } from '../config';
 import { store } from '../state';
@@ -53,7 +53,7 @@ class UserState extends React.Component<RouteComponentProps, IState> {
     }
   }
   async getKnowledgeState(courseUri: string) {
-    const resp = await Axios.get(baseURL+"/user/knowledge/graph", { params: { courseUri } });
+    const resp = await Axios.get(baseURL+"/user/knowledge/graph", { params: { courseUri }, withCredentials: true });
     const { res, data } = resp.data;
     if (res) {
       return data;
@@ -64,19 +64,19 @@ class UserState extends React.Component<RouteComponentProps, IState> {
   componentDidMount() {
     this.getAllCourse().then(courseList => {
       this.setState({ courseList });
-      this.getKnowledgeState(courseList[this.state.currentCourseIndex].uri).then(data => {
-        if (data !== null) {
-          // this.setState({ nodes: data.nodes, edges: data.edges });
-          this.renderGraph(data.nodes, data.edges);
-        } else {
-          addErrorToast('获取数据失败');
-        }
-      }).catch(err => console.error(err));
+      return this.getKnowledgeState(courseList[this.state.currentCourseIndex].uri);
+    }).then(data => {
+      if (data !== null) {
+        // this.setState({ nodes: data.nodes, edges: data.edges });
+        this.renderGraph(data.nodes, data.edges);
+      } else {
+        addErrorToast('获取数据失败');
+      }
     }).catch(err => console.error(err));
 
     const graphDiv = this.containerRef.current as HTMLDivElement;
     const width = graphDiv.scrollWidth;
-    const height = graphDiv.scrollHeight || 500;
+    const height = graphDiv.scrollHeight || 700;
     this.graph = new G6.Graph({
       container: graphDiv,
       width,
@@ -154,7 +154,11 @@ class UserState extends React.Component<RouteComponentProps, IState> {
     return (<Fragment>
       <div className="Page user-state">
         <article>
-          <h1>{firstUpperCase(username)+' 的学习状态'}</h1>
+          <h1 className="title-with-back">
+            <Button minimal className="back"
+              onClick={() => this.props.history.go(-1)}
+            ><Icon icon="arrow-left" iconSize={25} /></Button>
+            {firstUpperCase(username)+' 的学习状态'}</h1>
           <Popover position={Position.BOTTOM}>
             <Button icon="graph" text={`in ${courseList[currentCourseIndex]?.title.toUpperCase()}`} />
             <Menu>
