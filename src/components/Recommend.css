@@ -1,0 +1,15 @@
+.recommend-slider .slick-next:before,
+.recommend-slider .slick-prev:before {
+  color: #000;
+}
+.recommend-slider .slick-slide > div {
+  text-align: center;
+  padding: 1px;
+  margin: 10px;
+}
+.recommend-card {
+  padding: 25px;
+  max-width: calc(var(--main-width) / 4);
+  min-height: 150px;
+  text-align: initial;
+}

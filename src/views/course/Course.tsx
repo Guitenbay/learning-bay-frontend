@@ -18,6 +18,7 @@ interface IState {
 }
 
 class Course extends React.Component<RouteComponentProps, IState> {
+  private uri:string = '';
   constructor(props: RouteComponentProps) {
     super(props);
     this.state = {
@@ -50,8 +51,8 @@ class Course extends React.Component<RouteComponentProps, IState> {
     if (typeof search === 'string') {
       const parsed = parse(search);
       if (!!parsed.uri) {
-        const uri = Base64.decode(parsed.uri as string);
-        this.getChapterList(uri).then(chapterList => {
+        this.uri = Base64.decode(parsed.uri as string);
+        this.getChapterList(this.uri).then(chapterList => {
           this.setState({ chapterList }, () => {
             // 设置第一章为打开状态
             this.handlerChapterClick(0)();
@@ -81,7 +82,7 @@ class Course extends React.Component<RouteComponentProps, IState> {
       if (typeof lessons === 'undefined') return;
       const list = lessons.map(lesson => (
         <li key={lesson.uri}>
-          <Link to={{ pathname: '/lesson', search: `?uri=${Base64.encode(lesson.uri)}` }}>
+          <Link to={{ pathname: '/lesson', search: `?uri=${Base64.encode(lesson.uri)}`, state: {courseUri: this.uri} }}>
             {lesson.title}
           </Link>
         </li>

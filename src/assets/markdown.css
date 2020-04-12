@@ -14,3 +14,9 @@
 .markdown-body ul {
   padding-left: 1.2rem;
 }
+
+.markdown-body blockquote {
+  padding: 0 1em;
+  color: #3e4752;
+  border-left: .25em solid #dfe2e5;
+}
