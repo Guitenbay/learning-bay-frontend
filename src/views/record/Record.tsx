@@ -94,6 +94,8 @@ class Record extends React.Component<{}, IState> {
     // 存在 editor
     if (this.state.record && typeof this.editorRef.current?.editor !== 'undefined' 
       && !prevState.record) {
+        console.log("开始录制动作")
+        this.currentTime = 0;
       requestAnimationFrame(this.recordFrame);
       // 每隔 1s 上传数据
       this.intervalHandler = setInterval(() => {

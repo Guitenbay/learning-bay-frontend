@@ -157,6 +157,7 @@ class Code extends React.Component<RouteComponentProps, IState> {
               reviewList={reviewList} 
               recommendList={recommendList}
               showNoneRecommend={showNoneRecommend}
+              courseUri={(this.props.location.state as {courseUri: string}).courseUri}
               />
           </article>
         </div>

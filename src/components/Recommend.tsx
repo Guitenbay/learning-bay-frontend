@@ -12,7 +12,8 @@ interface IProps {
   history: H.History,
   reviewList: Lesson[],
   recommendList: Lesson[],
-  showNoneRecommend: boolean
+  showNoneRecommend: boolean,
+  courseUri: string
 }
 
 class Recommend extends React.Component<IProps> {
@@ -31,8 +32,8 @@ class Recommend extends React.Component<IProps> {
       >
         { list.map(lesson => (
             <Card key={lesson.uri} className="recommend-card"
-              onClick={() => { this.props.history.push({ pathname: '/lesson', search: `?uri=${Base64.encode(lesson.uri)}`, state: {title: lesson.title} }) }}>
-              <H5><Link to={{pathname: '/lesson', search: `?uri=${Base64.encode(lesson.uri)}`, state: {title: lesson.title}}}>
+              onClick={() => { this.props.history.push({ pathname: `/lesson/${Base64.encode(lesson.uri)}`, state: {title: lesson.title, courseUri: this.props.courseUri} }) }}>
+              <H5><Link to={{ pathname: `/lesson/${Base64.encode(lesson.uri)}`, state: {title: lesson.title, courseUri: this.props.courseUri} }}>
                 {lesson.title.toUpperCase()}</Link>
               </H5>
               <div style={{textAlign: 'right', marginTop: '55px'}}>

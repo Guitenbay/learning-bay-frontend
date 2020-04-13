@@ -3,7 +3,6 @@ import Footer from '../../components/Footer';
 import { baseURL, fusekiURL } from '../config';
 import VideoPlayer from '../../components/VideoPlayer';
 import { store, SET_USER } from '../state';
-import { parse } from 'query-string';
 import { RouteComponentProps } from 'react-router-dom';
 import { H1, Button, Icon, H2, Intent } from '@blueprintjs/core';
 import Axios from 'axios';
@@ -27,6 +26,7 @@ interface IState {
 }
 
 class LessonPage extends React.Component<RouteComponentProps, IState> {
+  private uri: string = '';
   constructor(props: RouteComponentProps) {
     super(props);
     this.state = {
@@ -91,13 +91,28 @@ class LessonPage extends React.Component<RouteComponentProps, IState> {
       return null;
     }
   }
-  componentDidMount() {
-    const search = this.props.location.search;
-    if (typeof search === 'string') {
-      const parsed = parse(search);
-      if (!!parsed.uri) {
-        const uri = Base64.decode(parsed.uri as string);
-        this.getLesson(uri).then(lesson => {
+  // 解决 react-router 参数更新，相同页面不更新的问题
+  // static getDerivedStateFromProps () {
+  //   console.log('new props');
+  //   console.log();
+  // }
+  UNSAFE_componentWillReceiveProps(nextProps: RouteComponentProps) {
+    const nextUri = Base64.decode((nextProps.match.params as {uri: string}).uri);
+    if (nextUri !== this.uri) {
+      // 初始化 state
+      this.setState({
+        sectionList: [],
+        mediaFilename: '',
+        title: '',
+        codeQuestionUri: '',
+        recommendList: [],
+        reviewList: [],
+        showNoneRecommend: false,
+        skeleton: true
+      })
+      if (!!nextUri) {
+        this.uri = nextUri;
+        this.getLesson(this.uri).then(lesson => {
           if (!!lesson) {
             this.setState({ 
               title: (lesson as Lesson).title,
@@ -113,10 +128,38 @@ class LessonPage extends React.Component<RouteComponentProps, IState> {
             this.setState({ mediaFilename: filename });
           }
         }).catch(err => console.error(err));
-        this.getSectionList(uri).then(list => {
+  
+        this.getSectionList(this.uri).then(list => {
           this.setState({ sectionList: list });
         }).catch(err => console.error(err));
       }
+      setTimeout(() => this.setState({skeleton: false}), 800);
+    }
+  }
+  componentDidMount() {
+    const { uri } = this.props.match.params as {uri: string};
+    if (!!uri) {
+      this.uri = Base64.decode(uri as string);
+      this.getLesson(this.uri).then(lesson => {
+        if (!!lesson) {
+          this.setState({ 
+            title: (lesson as Lesson).title,
+            codeQuestionUri: (lesson as Lesson).codeQuestionUri });
+        }
+        return (lesson as Lesson).mediaUri;
+      }).then(mediaUri => {
+        if (!!mediaUri && mediaUri !== 'null') {
+          return this.getMediaMaterial(mediaUri)
+        }
+      }).then(filename => {
+        if (!!filename) {
+          this.setState({ mediaFilename: filename });
+        }
+      }).catch(err => console.error(err));
+
+      this.getSectionList(this.uri).then(list => {
+        this.setState({ sectionList: list });
+      }).catch(err => console.error(err));
     }
     setTimeout(() => this.setState({skeleton: false}), 800);
   }
@@ -128,7 +171,7 @@ class LessonPage extends React.Component<RouteComponentProps, IState> {
       if (res) {
         addSuccessToast(`打卡成功！${data || ''}`);
         if (codeQuestionUri !== '') {
-          this.props.history.push('/code', { uri: codeQuestionUri });
+          this.props.history.push('/code', { uri: codeQuestionUri, courseUri: (this.props.location.state as {courseUri: string}).courseUri });
         } else {
           // 获取推荐课时
           return Promise.all([this.getRecommend(), this.getReviewRecommend()]);
@@ -176,13 +219,17 @@ class LessonPage extends React.Component<RouteComponentProps, IState> {
           videoURL={`${baseURL}/video/${mediaFilename}.mmcv`}
           audioURL={`${baseURL}/audio/${mediaFilename}.webm`}
         />)
-        : null
+        : (<VideoPlayer
+          darkTheme={darkTheme}
+          videoURL={`${baseURL}/video/jsmm1.mmcv`}
+          audioURL={`${baseURL}/audio/jsmm1.webm`}
+        />)
       }
       <div className="Page lesson">
         <article>
           <H1 className={ skeleton ? "title-with-back bp3-skeleton" : "title-with-back"}>
             <Button minimal className="back"
-              onClick={() => this.props.history.push(`/course?uri=${Base64.encode(courseUri)}`)}
+              onClick={() => this.props.history.push(`/course/${Base64.encode(courseUri)}`)}
             ><Icon icon="arrow-left" iconSize={25} /></Button>
             { title }</H1>
           {sections}
@@ -207,6 +254,7 @@ class LessonPage extends React.Component<RouteComponentProps, IState> {
             reviewList={reviewList} 
             recommendList={recommendList}
             showNoneRecommend={showNoneRecommend}
+            courseUri={courseUri}
             />
         </article>
       </div>

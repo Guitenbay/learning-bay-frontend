@@ -35,8 +35,8 @@ class Home extends React.Component<RouteComponentProps, IState> {
       <Card interactive={true} elevation={Elevation.ONE} 
         key={course.uri}
         className="card"
-        onClick={() => {this.props.history.push({pathname: '/course', search: `?uri=${Base64.encode(course.uri)}`, state: {title: course.title}})}}>
-        <H5><Link to={{pathname: '/course', search: `?uri=${Base64.encode(course.uri)}`, state: {title: course.title}}}>
+        onClick={() => {this.props.history.push({pathname: `/course/${Base64.encode(course.uri)}`})}}>
+        <H5><Link to={{pathname: `/course/${Base64.encode(course.uri)}`}}>
           {course.title.toUpperCase()}</Link>
         </H5>
         <p>章节：</p>
@@ -57,9 +57,9 @@ class Home extends React.Component<RouteComponentProps, IState> {
             <div className="grid">
               {cards}
             </div>
-            <div><Link to="/play">Play</Link></div>
+            {/* <div><Link to="/play">Play</Link></div>
             <div><Link to="/record">Record</Link></div>
-            <div><Link to="/code">Code</Link></div>
+            <div><Link to="/code">Code</Link></div> */}
           </article>
         </div>
         <Footer />

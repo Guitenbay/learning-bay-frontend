@@ -102,15 +102,15 @@ class App extends React.Component<{}, IAPPState> {
           {/* 按从上往下顺序匹配
               exact 表示精确匹配
           */}
-          <main style={{flex: "auto", marginTop: "50px"}}>
+          <main style={{flex: "auto", paddingTop: "50px", height: "100%", width: "100%"}}>
             <Switch>
               <Route exact path="/" component={ Home } />
               <Route path="/login" component={ Login } />
               <Route path="/signup" component={ Signup } />
               <Route path="/play"><Video /></Route>
               <Route path="/record"><Record /></Route>
-              <Route path="/course" component={ Course } />
-              <Route path="/lesson" component={ Lesson } />
+              <Route path="/course/:uri" component={ Course } />
+              <Route path="/lesson/:uri" component={ Lesson } />
               <Route path="/code" component={ Code }></Route>
               <Route path="/user-state" component={ UserState }></Route>
               <Route path="/error"><div>404 Oops...</div></Route>

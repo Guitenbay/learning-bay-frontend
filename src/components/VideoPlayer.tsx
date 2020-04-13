@@ -24,8 +24,8 @@ interface IState {
 
 class VideoPlayer extends React.Component<IProps, IState> {
   private editorRef: RefObject<CodeEditor> = createRef<CodeEditor>();
-  // private audioRef: RefObject<ReactPlayer> = createRef<ReactPlayer>();
-  private audioElement: HTMLAudioElement | undefined = undefined;
+  private audioRef: RefObject<AudioController> = createRef<AudioController>();
+  // private audioElement: HTMLAudioElement | undefined = undefined;
   private editorData: Array<IEditorFrame> = [];
   private playArea: HTMLElement | undefined = undefined;
   private currentTime = 0;
@@ -84,11 +84,17 @@ class VideoPlayer extends React.Component<IProps, IState> {
     // play => true
     if (this.state.play && !prevState.play) {
       requestAnimationFrame(this.playFrame);
-      this.audioElement?.play();
+      // this.audioElement?.play();
+      if (this.audioRef.current?.audio?.paused) {
+        this.audioRef.current.audio.play();
+      }
     }
     // play => false
-    if (!this.state.play && !prevState.play) {
-      this.audioElement?.pause();
+    if (!this.state.play && prevState.play) {
+      // this.audioElement?.pause();
+      if (!this.audioRef.current?.audio?.paused) {
+        this.audioRef.current?.audio?.pause();
+      }
     }
   }
   componentDidMount() {
@@ -97,7 +103,7 @@ class VideoPlayer extends React.Component<IProps, IState> {
       this.setState({ blobAudioUrl: url });
     }).catch(err => console.error(err));
     this.playArea = document.querySelector('#play-area') as HTMLElement;
-    this.audioElement = document.querySelector('audio') as HTMLAudioElement;
+    // this.audioElement = document.querySelector('audio') as HTMLAudioElement;
     this.playArea.addEventListener("click", () => this.setState({ play: false }));
   }
   private handlePlayClick = () => {
@@ -134,7 +140,9 @@ class VideoPlayer extends React.Component<IProps, IState> {
           </div>
         </div>
         <div className="none audio">
-          <AudioController audioUrl={blobAudioUrl}
+          <AudioController 
+            ref={this.audioRef}
+            audioUrl={blobAudioUrl}
             play={play}
             onPlay={this.handleAudioPlay} 
             onPause={this.handleAudioPause}

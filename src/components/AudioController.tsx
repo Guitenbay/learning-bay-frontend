@@ -12,7 +12,7 @@ interface IState {
 }
 
 class AudioController extends React.Component<IProps, IState> {
-  private audio: HTMLAudioElement|undefined = undefined;
+  public audio: HTMLAudioElement|undefined = undefined;
   constructor(props: IProps) {
     super(props);
     this.state = {
@@ -32,20 +32,32 @@ class AudioController extends React.Component<IProps, IState> {
     this.audio.addEventListener('pause', () => this.props.onPause());
     this.audio.addEventListener('ended', () => this.props.onEnded());
     this.audio.addEventListener('seeked', event => this.props.onSeeked(event));
-    const progress = document.querySelector('.Timeline > .track') as HTMLElement;
+    const progress = document.querySelector('.Timeline') as HTMLElement;
     // 根据点击位置设置播放时间
     const handleScrub = (e: MouseEvent) => {
       const audio = (this.audio as HTMLAudioElement);
       if (isFinite(audio.duration)) {
-        const scrubTime = (e.offsetX / progress.offsetWidth) * audio.duration;
+        // 30 指进度条左边的按钮宽度
+        const scrubTime = ((e.clientX - 30) / progress.offsetWidth) * audio.duration;
         audio.currentTime = scrubTime;
       }
     }
-    progress.addEventListener('click', handleScrub);
+    progress.addEventListener('click', (e) => {
+      console.log('click');
+      handleScrub(e);
+    });
     // 拖动
     let mousedown = false;
-    progress.addEventListener('mousedown', () => mousedown = true);
-    progress.addEventListener('mouseup', () => mousedown = false);
+    progress.addEventListener('mousedown', () => {
+      console.log('mousedown');
+      mousedown = true;
+      this.audio?.pause();
+    });
+    progress.addEventListener('mouseup', () => {
+      console.log('mouseup');
+      mousedown = false;
+      this.audio?.play();
+    });
     progress.addEventListener('mousemove', e => mousedown && handleScrub(e));
   }
   private handlePlay = () => {
@@ -56,10 +68,10 @@ class AudioController extends React.Component<IProps, IState> {
     }
   }
   private handleSliderClick  = () => { this.setState({showSlider: !this.state.showSlider}) }
-  private handleSliderHidden = () => { this.setState({showSlider: false}) }
+  // private handleSliderHidden = () => { console.log('blur');this.setState({showSlider: false}) }
   private handleVolumeChange = (value: number) => {
-    this.setState({ volume: value }, 
-      () => (this.audio as HTMLAudioElement).volume = value);
+    (this.audio as HTMLAudioElement).volume = value;
+    this.setState({ volume: value });
   }
   render() {
     const { currentTime, volume, showSlider, percent } = this.state;
@@ -82,7 +94,7 @@ class AudioController extends React.Component<IProps, IState> {
             </div>
           </div>
           <div className="buttons right none">
-            <div className="SliderButton VolumeButton" onBlur={this.handleSliderHidden}>
+            <div className="SliderButton VolumeButton">
               {/* <input type="range" name="volume" className="player__slider" min="0" max="1" step="0.05" value="1"> */}
               <div className={ showSlider ? "slider-bg" : "slider-bg hidden"}>
                 <Slider labelRenderer={false} max={1} min={0} stepSize={0.01} labelStepSize={10}

@@ -1,3 +1,6 @@
+.lesson {
+  flex: 0 0 auto;
+}
 article {
   font-size: 12pt;
   line-height: 20pt;

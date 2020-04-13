@@ -1,28 +1,34 @@
 import React, { Fragment } from 'react';
-import { parse } from 'query-string';
 import { Button, H1, Icon } from '@blueprintjs/core';
 import Axios from 'axios';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import Footer from '../../components/Footer';
 import { fusekiURL } from '../config';
 import './Course.css';
-import { Chapter, Lesson } from '../model.d';
+import { Chapter, Lesson, Course } from '../model.d';
 import { store } from '../state';
 
-type Title = {
-  title: string
-}
-
 interface IState {
+  title: string,
   chapterList: Array<Chapter>
 }
 
-class Course extends React.Component<RouteComponentProps, IState> {
+class CoursePage extends React.Component<RouteComponentProps, IState> {
   private uri:string = '';
   constructor(props: RouteComponentProps) {
     super(props);
     this.state = {
+      title: '',
       chapterList: []
+    }
+  }
+  async getCourse(uri: string) {
+    const resp = await Axios.get(fusekiURL+"/course", { params: { uri } });
+    const { res, data } = resp.data;
+    if (res) {
+      return data as Course;
+    } else {
+      return {} as Course;
     }
   }
   async getChapterList(uri: string) {
@@ -47,23 +53,24 @@ class Course extends React.Component<RouteComponentProps, IState> {
     }
   }
   componentDidMount() {
-    const search = this.props.location.search;
-    if (typeof search === 'string') {
-      const parsed = parse(search);
-      if (!!parsed.uri) {
-        this.uri = Base64.decode(parsed.uri as string);
-        this.getChapterList(this.uri).then(chapterList => {
-          this.setState({ chapterList }, () => {
-            // 设置第一章为打开状态
-            this.handlerChapterClick(0)();
-          });
-        }).catch(err => console.error(err));
-      }
+    const { uri } = this.props.match.params as { uri: string };
+    if (!!uri) {
+      this.uri = Base64.decode(uri as string);
+      this.getCourse(this.uri).then(course => {
+        this.setState({ title: course.title });
+        return this.getChapterList(this.uri);
+      }).then(chapterList => {
+        this.setState({ chapterList }, () => {
+          // 设置第一章为打开状态
+          this.handlerChapterClick(0)();
+        });
+      }).catch(err => console.error(err));
     }
   }
   handlerChapterClick = (index: number) => {
     return () => {
       const _chapterList = JSON.parse(JSON.stringify(this.state.chapterList));
+      if (_chapterList.length <= 0) return;
       _chapterList[index].show = !_chapterList[index].show;
       if (Array.isArray(_chapterList[index].lessons)) {
         this.setState({ chapterList: _chapterList });
@@ -76,13 +83,13 @@ class Course extends React.Component<RouteComponentProps, IState> {
     }
   }
   render() {
-    const { chapterList } = this.state;
+    const { chapterList, title } = this.state;
     const { darkTheme } = store.getState();
     const renderLessonLi = (lessons: Array<Lesson>|undefined) => {
       if (typeof lessons === 'undefined') return;
       const list = lessons.map(lesson => (
         <li key={lesson.uri}>
-          <Link to={{ pathname: '/lesson', search: `?uri=${Base64.encode(lesson.uri)}`, state: {courseUri: this.uri} }}>
+          <Link to={{ pathname: `/lesson/${Base64.encode(lesson.uri)}`, state: {courseUri: this.uri} }}>
             {lesson.title}
           </Link>
         </li>
@@ -113,7 +120,7 @@ class Course extends React.Component<RouteComponentProps, IState> {
             <Button minimal className="back"
               onClick={() => this.props.history.push("/")}
             ><Icon icon="arrow-left" iconSize={25} /></Button>
-            { (this.props.location.state as Title)?.title }</H1>
+            { title }</H1>
           {chapterUl}
         </article>
       </div>
@@ -122,4 +129,4 @@ class Course extends React.Component<RouteComponentProps, IState> {
   }
 }
 
-export default Course;
+export default CoursePage;
