@@ -52,7 +52,7 @@ class Signup extends React.Component<RouteComponentProps, IState> {
         addSuccessToast("注册成功");
         this.props.history.push("/login");
       } else {
-        addErrorToast("注册失败");
+        addErrorToast("注册失败，可能已存在该用户名");
       }
     }).catch(err => console.error(err));
   }
