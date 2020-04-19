@@ -28,8 +28,8 @@ class Login extends React.Component<RouteComponentProps, IState> {
     }
   }
   checkInput(username: string, password: string): boolean {
-    let usernameError = username.length === 0,
-        passwordError = password.length < 7;
+    let usernameError = !/^[a-zA-Z0-9\u4E00-\u9FA5_-]{2,16}$/.test(username),
+        passwordError = !/^.{7,16}$/.test(password);
     this.setState({ usernameError, passwordError });
     return !usernameError && !passwordError;
   }
@@ -74,6 +74,7 @@ class Login extends React.Component<RouteComponentProps, IState> {
           <div className="input-card">
             <H2>Log in to LearningBay</H2>
             <FormGroup
+              helperText="用户名只允许大小写字母、数字、中文、下划线和减号，位数应 2 到 16 位..."
               label="用户名"
               labelFor="name"
             >
@@ -88,7 +89,7 @@ class Login extends React.Component<RouteComponentProps, IState> {
                 />
             </FormGroup>
             <FormGroup
-              helperText="密码应该大于等于7位..."
+              helperText="密码位数应 7 到 16 位..."
               label="密码"
               labelFor="pwd"
             >
