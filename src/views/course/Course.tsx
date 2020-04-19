@@ -86,7 +86,9 @@ class CoursePage extends React.Component<RouteComponentProps, IState> {
     const { chapterList, title } = this.state;
     const { darkTheme } = store.getState();
     const renderLessonLi = (lessons: Array<Lesson>|undefined) => {
-      if (typeof lessons === 'undefined') return;
+      if (typeof lessons === 'undefined' || lessons.length === 0) return (
+        <blockquote>即将推出，敬请期待</blockquote>
+      );
       const list = lessons.map(lesson => (
         <li key={lesson.uri}>
           <Link to={{ pathname: `/lesson/${Base64.encode(lesson.uri)}`, state: {courseUri: this.uri} }}>
