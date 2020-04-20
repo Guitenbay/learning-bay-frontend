@@ -92,10 +92,6 @@ class LessonPage extends React.Component<RouteComponentProps, IState> {
     }
   }
   // 解决 react-router 参数更新，相同页面不更新的问题
-  // static getDerivedStateFromProps () {
-  //   console.log('new props');
-  //   console.log();
-  // }
   UNSAFE_componentWillReceiveProps(nextProps: RouteComponentProps) {
     const nextUri = Base64.decode((nextProps.match.params as {uri: string}).uri);
     if (nextUri !== this.uri) {
@@ -195,6 +191,10 @@ class LessonPage extends React.Component<RouteComponentProps, IState> {
     }).catch(err => console.error(err));
   }
   render() {
+    if (this.props.location.state === undefined) {
+      this.props.history.push('/');
+      return null;
+    }
     const { darkTheme } = store.getState();
     const { sectionList, mediaFilename, title, codeQuestionUri, skeleton,
       reviewList, recommendList, showNoneRecommend

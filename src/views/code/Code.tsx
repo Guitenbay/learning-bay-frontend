@@ -123,6 +123,10 @@ class Code extends React.Component<RouteComponentProps, IState> {
     }).catch(err => console.error(err));
   }
   render() {
+    if (this.props.location.state === undefined) {
+      this.props.history.push('/');
+      return null;
+    }
     const { darkTheme } = store.getState();
     const { codeQuestion, recommendList, reviewList, showNoneRecommend } = this.state;
     return (
