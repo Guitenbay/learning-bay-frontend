@@ -3,6 +3,15 @@
   overflow: hidden;
 }
 
+.AudioView {
+  left: 0;
+  bottom: 0;
+}
+.AudioView > canvas {
+  width: var(--sidebar-width);
+  height: 100px;
+}
+
 .ControlsView {
   width: 100%;
   height: var(--audio-height);

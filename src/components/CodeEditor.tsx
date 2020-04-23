@@ -18,7 +18,7 @@ interface IProps {
 interface IState { 
   showConsole: boolean, outputs: string[],
   nodes: ITreeNode[],
-  monacoSize: { width: string, height: string }
+  monacoSize: { width: string|number, height: string|number }
 }
 const NAMESPACE = uuidv5("learningbay-frontend", uuidv5.DNS);
 class CodeEditor extends React.Component<IProps, IState> {
@@ -41,7 +41,7 @@ class CodeEditor extends React.Component<IProps, IState> {
       nodes: [{id:uuidv5('file', NAMESPACE), isExpanded: true, label:'files', icon:'folder-open', childNodes: [{
         id: uuidv5('index.js', NAMESPACE), icon: "document", label: "index.js", isSelected: true
       }]}],
-      monacoSize: { width: '100%', height: '100%' }
+      monacoSize: { width: 0, height: 0 }
     }
   }
   componentDidMount() {
@@ -69,7 +69,7 @@ class CodeEditor extends React.Component<IProps, IState> {
       const consoleView = document.querySelector('.ConsoleView');
       if (consoleView !== null) height -= (consoleView as HTMLElement).offsetHeight;
     } else { height -= 30 } // 显示部分 ConsoleView，固定为 30px
-    this.setState({ monacoSize: {width: `${width}`, height: `${height}`} });
+    this.setState({ monacoSize: {width, height} });
   }
   private handleRunClick = () => {
     let content: string | undefined = this.editorRef.current?.editor?.getValue();
@@ -82,12 +82,15 @@ class CodeEditor extends React.Component<IProps, IState> {
     this.props.onRunCode?.call(this, content);
   }
   private handleShowConsole = () => {
-    const editorEle = document.querySelector(".react-monaco-editor-container") as HTMLElement;
-    const width = editorEle.offsetWidth;
-    let height = editorEle.offsetHeight;
-    if (this.state.showConsole) height *= 3/2;
-    else height *= 2/3;
-    this.setState({ showConsole: !this.state.showConsole, monacoSize: { width: `${width}`, height: `${height}`}});
+    // const editorEle = document.querySelector(".react-monaco-editor-container") as HTMLElement;
+    // const width = editorEle.offsetWidth;
+    // let height = editorEle.offsetHeight;
+    const width = this.state.monacoSize.width as number;
+    const height = this.state.monacoSize.height as number;
+    let nextH;
+    if (this.state.showConsole) nextH = 10 / 7 * (height + 9); // true => false
+    else nextH = 9 + 0.7 * height; // false => true
+    this.setState({ showConsole: !this.state.showConsole, monacoSize: { width, height: nextH}});
   }
   // tree Events
   private handleNodeClick = (nodeData: ITreeNode, _nodePath: number[], e: React.MouseEvent<HTMLElement>) => {

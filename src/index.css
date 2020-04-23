@@ -126,8 +126,6 @@ footer {
 }
 .InterfaceView.AudioView {
   position: absolute;
-  top: 0;
-  right: 0;
   z-index: 610;
 }
 /* -----------Editor View End------------ */

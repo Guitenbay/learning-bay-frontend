@@ -16,13 +16,17 @@ import Axios from 'axios';
 import { baseURL } from './config';
 import { toastRef, addSuccessToast } from './toaster';
 
+interface IAPPProps {
+  id: string,
+}
+
 interface IAPPState {
   dark: boolean,
   username: string
 }
 
-class App extends React.Component<{}, IAPPState> {
-  constructor(props: {}) {
+class App extends React.Component<IAPPProps, IAPPState> {
+  constructor(props: IAPPProps) {
     super(props);
     this.state = {
       dark: false,
@@ -55,9 +59,10 @@ class App extends React.Component<{}, IAPPState> {
     }).catch(err => console.error(err))
   }
   render() {
+    const { id } = this.props;
     const { dark, username } = this.state;
     return (
-      <div className={ dark ? Classes.DARK : '' } style={{display: "flex", flexDirection: "column"}} >
+      <div id={id} className={ dark ? Classes.DARK : '' } style={{display: "flex", flexDirection: "column"}} >
         <Toaster position="bottom-right"
           ref={toastRef} />
         <Router history={history}>

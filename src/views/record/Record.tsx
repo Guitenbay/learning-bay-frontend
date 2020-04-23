@@ -4,16 +4,18 @@ import { ReactMic, ReactMicStopEvent } from 'react-mic';
 import './Record.css';
 import { Directory, Depandency } from '../../components/sidebar.d';
 import { IEditorFrame } from '../frame.d';
-import { baseURL } from '../config'
+import { baseURL, Axios } from '../config'
 import { IMouseEventData, IMouseMoveData } from '../frame.d';
 import { blobPost } from '../../utils/blob-ajax';
 import { store } from '../state';
 import CodeEditor from '../../components/CodeEditor';
 import { Button } from '@blueprintjs/core';
+import { addErrorToast, addSuccessToast } from '../toaster';
 
 interface IState {
   title: string,
-  record: boolean
+  record: boolean,
+  created: boolean
 }
 
 const CACHE_SIZE = 10;
@@ -42,7 +44,8 @@ class Record extends React.Component<{}, IState> {
     super(props);
     this.state = {
       title: 'undefined',
-      record: false
+      record: false,
+      created: false
     }
   }
   private setListeners() {
@@ -66,6 +69,10 @@ class Record extends React.Component<{}, IState> {
         element: `#${(event.target as HTMLElement).id}`, event: 'click'
       } as IMouseEventData)
     });
+  }
+  private async createMMCVFile(filename: string) {
+    const resp = await Axios.put(`${baseURL}/video/1.mmcv`);
+    return resp.data.res;
   }
   private async uploadEditorFrame(frames: Array<IEditorFrame>) {
     const data = Base64.encode(JSON.stringify(frames));
@@ -94,8 +101,8 @@ class Record extends React.Component<{}, IState> {
     // 存在 editor
     if (this.state.record && typeof this.editorRef.current?.editor !== 'undefined' 
       && !prevState.record) {
-        console.log("开始录制动作")
-        this.currentTime = 0;
+      addSuccessToast("开始录制动作")
+      this.currentTime = 0;
       requestAnimationFrame(this.recordFrame);
       // 每隔 1s 上传数据
       this.intervalHandler = setInterval(() => {
@@ -128,12 +135,13 @@ class Record extends React.Component<{}, IState> {
         this.cacheFrames = [];
         this.uploadEditorFrame(this.uploadChunks[0]).then(({ res }) => {
           if (res) {
-            console.log('上传成功');
+            addSuccessToast('上传文件成功');
             this.uploadChunks.shift();
           } else {
-            console.log('上传失败');
+            addErrorToast('上传文件失败');
             // TODO: 转入上传失败函数处理
           }
+          this.setState({created: false});
         }).catch(err => console.error(err));
       }
     }
@@ -144,6 +152,12 @@ class Record extends React.Component<{}, IState> {
   private handleRecordClick = () => {
     this.setState({ record: !this.state.record });
   }
+  private handleCreateClick = () => {
+    this.createMMCVFile('.mmcv').then(res => {
+      addSuccessToast('创建文件成功');
+      this.setState({created: res});
+    })
+  }
   // onData(recordedBlob: Blob) {
   //   console.log('chunk of real-time data is: ', recordedBlob);
   // }
@@ -151,15 +165,16 @@ class Record extends React.Component<{}, IState> {
     // console.log('recordedBlob is: ', recordedBlob);
     blobPost(`${baseURL}/audio/1.webm`, recordedBlob.blob).then(({ res }) => {
       if (res) {
-        console.log('上传音频成功');
+        addSuccessToast('上传音频成功');
       } else {
-        console.log('上传音频失败');
+        addErrorToast('上传音频失败');
         // TODO: 转入上传失败函数处理
       }
     }).catch(err => console.error(err));
   }
   render() {
     const { darkTheme } = store.getState();
+    const { created } = this.state;
     return (
       <div className="flex vertical" style={{width: '100%', height: '100%', overflow: "hidden"}}>
         <div className="auto">
@@ -180,8 +195,13 @@ class Record extends React.Component<{}, IState> {
             </div>
           </div>
         </div>
-        <div className="none ControlsView">
-          <Button className="none" onClick={this.handleRecordClick}>Record</Button> 
+        <div className="none ControlsView flex">
+          <Button className="none" onClick={this.handleCreateClick}>Create</Button>
+          <Button className="none" disabled={!created} onClick={this.handleRecordClick}>Record</Button>
+          {/* <InputGroup
+            onChange={this.handleTextChange}
+            placeholder="文件名"
+          /> */}
         </div>
       </div>
     );
