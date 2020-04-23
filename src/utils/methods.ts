@@ -1,4 +1,6 @@
-const imitateMouseEvent = (element: Element, eventType: string, iClientX: number, iClientY: number) => {
+const imitateMouseEvent = (element: HTMLElement, eventType: string) => {
+  const iClientX = element.offsetLeft + element.offsetWidth / 2;
+  const iClientY = element.offsetTop + element.offsetHeight / 2;
   const event = new MouseEvent(eventType, {"clientX": iClientX, "clientY": iClientY});
   element.dispatchEvent(event);
 }

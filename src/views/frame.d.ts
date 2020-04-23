@@ -8,8 +8,6 @@ export interface IMouseMoveData {
 
 export interface IMouseEventData {
   type: 'mouse-event',
-  x: number,
-  y: number,
   event: string,
   element: string
 }

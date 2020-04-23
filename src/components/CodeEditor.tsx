@@ -138,7 +138,7 @@ class CodeEditor extends React.Component<IProps, IState> {
           <div className={ darkTheme ? "TitlebarView flex between dark" : "TitlebarView flex between" } 
             style={{width: 'calc(100% - var(--sidebar-width))'}}>
             <div className="project title">index.js</div>
-            <Button style={{height: '30px'}} icon="play" text="Run Code" intent="success" onClick={this.handleRunClick} />
+            <Button id="run-code-btn" style={{height: '30px'}} icon="play" text="Run Code" intent="success" onClick={this.handleRunClick} />
           </div>
           <div className="EditorView">
             <MonacoEditor ref={this.editorRef}

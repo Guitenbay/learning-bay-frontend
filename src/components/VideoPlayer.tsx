@@ -51,9 +51,11 @@ class VideoPlayer extends React.Component<IProps, IState> {
       initPos.x = (this.playArea as HTMLElement).offsetLeft;
       initPos.y = (this.playArea as HTMLElement).offsetTop;
       const { x, y } = (currentData as IEditorFrame).mouseMove;
+      // 更新鼠标
       this.setState({ position: { x: initPos.x + x, y: initPos.y + y }});
-      (currentData as IEditorFrame).mouseEvents.forEach(({x, y, element, event}) => {
-        imitateMouseEvent(document.querySelector(element) as HTMLElement, event, x, y);
+      // 更新鼠标点击事件
+      (currentData as IEditorFrame).mouseEvents.forEach(({element, event}) => {
+        imitateMouseEvent(document.querySelector(element) as HTMLElement, event);
       })
       this.editorRef.current?.editor?.setValue((currentData as IEditorFrame).modelValue);
       this.editorRef.current?.editor?.restoreViewState((currentData as IEditorFrame).viewState);

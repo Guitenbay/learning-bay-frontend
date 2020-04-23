@@ -40,6 +40,8 @@ class Record extends React.Component<{}, IState> {
   private cacheMouseEvents: Array<IMouseEventData> = [];
   private intervalHandler: NodeJS.Timeout | undefined = undefined;
   private currentTime: number = 0;
+
+  private recordArea: HTMLElement|undefined;
   constructor(props: {}) {
     super(props);
     this.state = {
@@ -49,7 +51,8 @@ class Record extends React.Component<{}, IState> {
     }
   }
   private setListeners() {
-    const recordArea: HTMLElement = document.querySelector<HTMLElement>('#record-area') as HTMLElement;
+    if (this.recordArea === undefined) return;
+    const recordArea = this.recordArea as HTMLElement;
     recordArea?.addEventListener('mousemove', event => {
       // console.dir(event);
       const offsetX = event.clientX - recordArea.offsetLeft;
@@ -65,7 +68,7 @@ class Record extends React.Component<{}, IState> {
     recordArea?.addEventListener('click', event => {
       if ((event.target as HTMLElement).id === '') return;
       this.cacheMouseEvents.push({ 
-        type: 'mouse-event', x: event.offsetX, y: event.offsetY,
+        type: 'mouse-event',
         element: `#${(event.target as HTMLElement).id}`, event: 'click'
       } as IMouseEventData)
     });
@@ -147,6 +150,7 @@ class Record extends React.Component<{}, IState> {
     }
   }
   componentDidMount() {
+    this.recordArea = document.querySelector<HTMLElement>('#record-area') as HTMLElement;
     this.setListeners();
   }
   private handleRecordClick = () => {
