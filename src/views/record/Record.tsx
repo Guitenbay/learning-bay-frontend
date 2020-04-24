@@ -11,7 +11,7 @@ import { store } from '../state';
 import CodeEditor from '../../components/CodeEditor';
 import { Button } from '@blueprintjs/core';
 import { addErrorToast, addSuccessToast } from '../toaster';
-import { getImitateElement } from '../../utils/methods';
+import { getImitateElement, getMostLeft, getMostTop } from '../../utils/methods';
 
 interface IState {
   title: string,
@@ -56,19 +56,30 @@ class Record extends React.Component<{}, IState> {
     if (this.recordArea === undefined) return;
     const recordArea = this.recordArea as HTMLElement;
     recordArea?.addEventListener('mousemove', event => {
-      // console.dir(event);
-      const offsetX = event.clientX - recordArea.offsetLeft;
-      const offsetY = event.clientY - recordArea.offsetTop;
+      let currentMousePos = { type: 'mouse-move' as 'mouse-move' };
+      const target = getImitateElement(event.target as HTMLElement, 'record-area');
+      let offsetX = event.clientX - recordArea.offsetLeft;
+      let offsetY = event.clientY - recordArea.offsetTop;
+      if (!Object.is(target, null)) {
+        const targetNotNull = target as HTMLElement;
+        offsetX -= getMostLeft(targetNotNull, 'record-area');
+        offsetY -= getMostTop(targetNotNull, 'record-area');
+        currentMousePos = Object.assign(currentMousePos, { containerId: targetNotNull.id });
+      }
       if (this.currentMousePos.x !== offsetX && this.currentMousePos.y !== offsetY) {
-        this.currentMousePos = {
-          type: 'mouse-move',
+        this.currentMousePos = Object.assign(currentMousePos, {
           x: offsetX,
           y: offsetY
-        }
+        });
+      } else {
+        this.currentMousePos = Object.assign(currentMousePos, {
+          x: this.currentMousePos.x,
+          y: this.currentMousePos.y
+        });
       }
     });
     recordArea?.addEventListener('click', event => {
-      const target = getImitateElement(event.target as HTMLElement);
+      const target = getImitateElement(event.target as HTMLElement, 'record-area');
       if (Object.is(target, null)) return;
       if ((target as HTMLElement).id === '') return;
       this.cacheMouseEvents.push({ 

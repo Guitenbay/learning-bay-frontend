@@ -3,7 +3,7 @@ import lodash from 'lodash';
 import * as monacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
 import './VideoPlayer.css';
 import MouseDevice from './MouseDevice';
-import { imitateMouseEvent } from '../utils/methods'
+import { imitateMouseEvent, getMostLeft, getMostTop } from '../utils/methods'
 import { IEditorFrame } from '../views/frame.d';
 // import { Directory, Depandency } from './sidebar.d';
 import { blobGet } from '../utils/blob-ajax';
@@ -48,25 +48,23 @@ class VideoPlayer extends React.Component<IProps, IState> {
       return;
     };
     // focus
-    // this.editorRef.current?.editor?.focus();
+    this.editorRef.current?.editor?.focus();
     const currentData = this.editorData[this.currentFrameNumber];
     if ((currentData as IEditorFrame).index === this.currentFrameNumber) {
       const initPos = { x:0, y:0 };
-      initPos.x = (this.playArea as HTMLElement).offsetLeft;
-      initPos.y = (this.playArea as HTMLElement).offsetTop;
-      const { x, y } = (currentData as IEditorFrame).mouseMove;
-      let mouseX = initPos.x + x;
-      let mouseY = initPos.y + y;
+      const { x, y, containerId } = (currentData as IEditorFrame).mouseMove;
+      if (containerId === undefined) {
+        initPos.x = (this.playArea as HTMLElement).offsetLeft;
+        initPos.y = (this.playArea as HTMLElement).offsetTop;
+      } else {
+        const container = document.querySelector(`#${containerId}`) as HTMLElement;
+        initPos.x = getMostLeft(container, 'play-area');
+        initPos.y = getMostTop(container, 'play-area');
+      }
+      let mouseX = initPos.x + x, mouseY = initPos.y + y;
       // 更新鼠标点击事件
       (currentData as IEditorFrame).mouseEvents.forEach(({element, event}) => {
         const target = document.querySelector(element) as HTMLElement;
-        mouseX = initPos.x + target.offsetLeft + target.offsetWidth / 2;
-        mouseY = initPos.y + target.offsetTop + target.offsetHeight / 2;
-        // 修改接下来 1, 2 的鼠标位置
-        this.editorData[this.currentFrameNumber+1].mouseMove.x = mouseX;
-        this.editorData[this.currentFrameNumber+1].mouseMove.y = mouseY;
-        this.editorData[this.currentFrameNumber+1].mouseMove.x = mouseX;
-        this.editorData[this.currentFrameNumber+1].mouseMove.y = mouseY;
         imitateMouseEvent(target, event);
       })
       // 更新鼠标
@@ -150,12 +148,8 @@ class VideoPlayer extends React.Component<IProps, IState> {
     }
     this.setState({ play: true });
   }
-  private handleAudioPause = () => {
-    this.setState({ play: false })
-  }
-  private handleAudioEnded = () => {
-    this.setState({ play: false })
-  }
+  private handleAudioPause = () => this.setState({ play: false })
+  private handleAudioEnded = () => this.setState({ play: false })
   private handleAudioSeek = (event: Event) => {
     const second = (event.target as HTMLAudioElement).currentTime;
     // 向下取一位小数 即以 0.1s 为单位

@@ -1,7 +1,8 @@
 import * as monacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
 
 export interface IMouseMoveData {
-  type: 'mouse-move'
+  type: 'mouse-move',
+  containerId?: string,
   x: number,
   y: number
 }

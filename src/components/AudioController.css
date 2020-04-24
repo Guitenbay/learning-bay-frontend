@@ -12,6 +12,7 @@
 .AudioController {
   background: var(--bg-color);
   color: var(--label-color);
+  z-index: 450;
 }
 
 .Timeline {

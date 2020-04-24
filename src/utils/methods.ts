@@ -7,14 +7,27 @@ const imitateMouseEvent = (element: HTMLElement, eventType: string) => {
     case 'click': element.click()
   }
 }
-const getImitateElement = (target: HTMLElement | null): HTMLElement | null => {
+const getImitateElement = (target: HTMLElement | null, until?: string): HTMLElement | null => {
   if (Object.is(target, null)) return null;
   const element = target as HTMLElement;
+  if (until !== undefined && element.id === until) return null;
   if (element.getAttribute("data-imitate") === 'true') {
     return element;
   } else {
     return getImitateElement(element.parentElement);
   }
+}
+const getMostLeft = (target: HTMLElement | null, until?: string): number => {
+  if (Object.is(target, null)) return 0;
+  const element = target as HTMLElement;
+  if (until !== undefined && element.id === until) return 0;
+  return element.offsetLeft + getMostLeft(element.parentElement, until);
+}
+const getMostTop = (target: HTMLElement | null, until?: string): number => {
+  if (Object.is(target, null)) return 0;
+  const element = target as HTMLElement;
+  if (until !== undefined && element.id === until) return 0;
+  return element.offsetTop + getMostTop(element.parentElement, until);
 }
 function formatTime(value: number){
 　　if (!value) return '00:00'　　　
@@ -28,4 +41,4 @@ function firstUpperCase(str: string) {
     return $1.toUpperCase() + $2
   })
 }
-export { imitateMouseEvent, getImitateElement, formatTime, firstUpperCase }
+export { imitateMouseEvent, getImitateElement, getMostLeft, getMostTop, formatTime, firstUpperCase }
