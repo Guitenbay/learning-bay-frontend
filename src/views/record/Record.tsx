@@ -11,6 +11,7 @@ import { store } from '../state';
 import CodeEditor from '../../components/CodeEditor';
 import { Button } from '@blueprintjs/core';
 import { addErrorToast, addSuccessToast } from '../toaster';
+import { getImitateElement } from '../../utils/methods';
 
 interface IState {
   title: string,
@@ -39,7 +40,8 @@ class Record extends React.Component<{}, IState> {
   private currentMousePos: IMouseMoveData = {type:'mouse-move',x:0,y:0};
   private cacheMouseEvents: Array<IMouseEventData> = [];
   private intervalHandler: NodeJS.Timeout | undefined = undefined;
-  private currentTime: number = 0;
+  private currentFrameNumber: number = 0;
+  private previousTime: number = -1;
 
   private recordArea: HTMLElement|undefined;
   constructor(props: {}) {
@@ -66,10 +68,12 @@ class Record extends React.Component<{}, IState> {
       }
     });
     recordArea?.addEventListener('click', event => {
-      if ((event.target as HTMLElement).id === '') return;
+      const target = getImitateElement(event.target as HTMLElement);
+      if (Object.is(target, null)) return;
+      if ((target as HTMLElement).id === '') return;
       this.cacheMouseEvents.push({ 
         type: 'mouse-event',
-        element: `#${(event.target as HTMLElement).id}`, event: 'click'
+        element: `#${(target as HTMLElement).id}`, event: 'click'
       } as IMouseEventData)
     });
   }
@@ -85,19 +89,31 @@ class Record extends React.Component<{}, IState> {
     return resp;
   }
   private recordFrame = () => {
-    const frame = Object.assign({}, {
-      index: this.currentTime,
+    const currentTime = Date.now();
+    let frame = Object.assign({}, {
+      index: this.currentFrameNumber,
       mouseMove: this.currentMousePos,
       mouseEvents: this.cacheMouseEvents,
-      viewState: this.editorRef.current?.editor?.saveViewState(),
-      modelValue: this.editorRef.current?.editor?.getValue()
     });
-    this.cacheFrames.push(frame as IEditorFrame)
+    if (this.currentFrameNumber % 2 === 0) {
+      frame = Object.assign(frame, {
+        viewState: this.editorRef.current?.editor?.saveViewState(),
+        modelValue: this.editorRef.current?.editor?.getValue()
+      });
+    }
+    this.cacheFrames.push(frame as IEditorFrame);
     
-    this.currentTime++;
+    this.currentFrameNumber++;
     this.cacheMouseEvents = [];
+
+    let ahead = 0;
+    if (this.previousTime > 0) {
+      // console.log(currentTime, this.previousTime, currentTime - this.previousTime);
+      ahead = 100 - (currentTime - this.previousTime);
+    }
+    this.previousTime = Date.now() + ahead;
     // 每隔 0.1s 调用函数
-    if (this.state.record) setTimeout(() => requestAnimationFrame(this.recordFrame), 100);
+    if (this.state.record) setTimeout(() => requestAnimationFrame(this.recordFrame), (100 + ahead > 0) ? 100 + ahead: 0);
   }
   componentDidUpdate(prevProps:{}, prevState: IState) {
     // record => true
@@ -105,7 +121,8 @@ class Record extends React.Component<{}, IState> {
     if (this.state.record && typeof this.editorRef.current?.editor !== 'undefined' 
       && !prevState.record) {
       addSuccessToast("开始录制动作")
-      this.currentTime = 0;
+      // this.currentFrameNumber = 0;
+      // this.previousTime = -1;
       requestAnimationFrame(this.recordFrame);
       // 每隔 1s 上传数据
       this.intervalHandler = setInterval(() => {
@@ -159,6 +176,8 @@ class Record extends React.Component<{}, IState> {
   private handleCreateClick = () => {
     this.createMMCVFile('.mmcv').then(res => {
       addSuccessToast('创建文件成功');
+      this.currentFrameNumber = 0;
+      this.previousTime = -1;
       this.setState({created: res});
     })
   }

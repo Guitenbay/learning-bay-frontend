@@ -23,6 +23,7 @@ class AudioController extends React.Component<IProps, IState> {
     this.audio = document.querySelector('audio#audio') as HTMLAudioElement;
     this.audio.addEventListener("timeupdate", () => {
       const audio = this.audio as HTMLAudioElement;
+      // console.log('precent', audio.currentTime, audio.duration, audio.currentTime / audio.duration);
       this.setState({ 
         percent: audio.currentTime / audio.duration,
         currentTime: formatTime(audio.currentTime)
@@ -30,7 +31,13 @@ class AudioController extends React.Component<IProps, IState> {
     })
     this.audio.addEventListener('play', () => this.props.onPlay());
     this.audio.addEventListener('pause', () => this.props.onPause());
-    this.audio.addEventListener('ended', () => this.props.onEnded());
+    this.audio.addEventListener('ended', () => {
+      this.props.onEnded();
+      this.setState({ 
+        percent: 1,
+        currentTime: formatTime((this.audio as HTMLAudioElement).currentTime)
+      });
+    });
     this.audio.addEventListener('seeked', event => this.props.onSeeked(event));
     const progress = document.querySelector('.Timeline') as HTMLElement;
     // 根据点击位置设置播放时间
@@ -43,20 +50,20 @@ class AudioController extends React.Component<IProps, IState> {
       }
     }
     progress.addEventListener('click', (e) => {
-      console.log('click');
+      // console.log('click');
       handleScrub(e);
     });
     // 拖动
     let mousedown = false;
     progress.addEventListener('mousedown', () => {
-      console.log('mousedown');
+      // console.log('mousedown');
       mousedown = true;
-      this.audio?.pause();
+      // this.audio?.pause();
     });
     progress.addEventListener('mouseup', () => {
-      console.log('mouseup');
+      // console.log('mouseup');
       mousedown = false;
-      this.audio?.play();
+      // this.audio?.play();
     });
     progress.addEventListener('mousemove', e => mousedown && handleScrub(e));
   }

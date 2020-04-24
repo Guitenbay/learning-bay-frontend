@@ -17,6 +17,6 @@ export interface IEditorFrame {
   index: number,
   mouseMove: IMouseMoveData,
   mouseEvents: Array<IMouseEventData>,
-  viewState: monacoEditor.editor.ICodeEditorViewState,
-  modelValue: string
+  viewState?: monacoEditor.editor.ICodeEditorViewState,
+  modelValue?: string
 }
