@@ -5,6 +5,7 @@
   "scripts": {
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
+    "build-without-map": "GENERATE_SOURCEMAP=false react-app-rewired build",
     "test": "react-app-rewired test",
     "eject": "react-scripts eject"
   },
