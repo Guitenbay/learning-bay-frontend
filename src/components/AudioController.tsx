@@ -1,14 +1,14 @@
 import React from "react";
-import { Button, Icon, Slider } from "@blueprintjs/core";
+import { Button, Icon, Slider, Spinner } from "@blueprintjs/core";
 import './AudioController.css'
 import { formatTime } from "../utils/methods";
 
 interface IProps { audioUrl: string, play: boolean, 
   onEnded: () => void, onPlay: () => void, onSeeked: ((event: Event) => void)
-  onPause: () => void
+  onPause: () => void, onCanPlay: () => void
 }
 interface IState { 
-  currentTime: string, volume: number, showSlider: boolean, percent: number
+  currentTime: string, volume: number, showSlider: boolean, percent: number, autoloaded: boolean
 }
 
 class AudioController extends React.Component<IProps, IState> {
@@ -16,11 +16,16 @@ class AudioController extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
     this.state = {
-      currentTime: "00:00", volume: 0.8, showSlider: false, percent: 0
+      currentTime: "00:00", volume: 0.8, showSlider: false, percent: 0, autoloaded: false,
     }
   }
   componentDidMount() {
     this.audio = document.querySelector('audio#audio') as HTMLAudioElement;
+    // audio 已经加载一段，可以播放时
+    this.audio.addEventListener("canplay", () => {
+      this.setState({ autoloaded: true });
+      this.props.onCanPlay();
+    })
     this.audio.addEventListener("timeupdate", () => {
       const audio = this.audio as HTMLAudioElement;
       // console.log('precent', audio.currentTime, audio.duration, audio.currentTime / audio.duration);
@@ -81,15 +86,19 @@ class AudioController extends React.Component<IProps, IState> {
     this.setState({ volume: value });
   }
   render() {
-    const { currentTime, volume, showSlider, percent } = this.state;
+    const { currentTime, volume, showSlider, percent, autoloaded } = this.state;
     return (
       <div className="AudioController">
         <audio id="audio" preload="auto" src={this.props.audioUrl}>您的浏览器不支持 audio 标签。</audio>
         <div className="body flex">
           <div className="buttons play none">
-            <Button minimal onClick={this.handlePlay}>
-              <Icon icon={ this.props.play ? "pause" : "play"} iconSize={20} color="var(--icon-color)" />
-            </Button>
+            {
+              (autoloaded)
+              ? (<Button minimal onClick={this.handlePlay}>
+                <Icon icon={ this.props.play ? "pause" : "play"} iconSize={20} color="var(--icon-color)" />
+              </Button>)
+              : (<div style={{ padding: 5 }}><Spinner size={20} /></div>)
+            }
           </div>
           <div className="Timeline auto flex">
             <div className="track auto">

@@ -9,7 +9,7 @@ import { IEditorFrame } from '../views/frame.d';
 import { blobGet } from '../utils/blob-ajax';
 import CodeEditor from './CodeEditor';
 import AudioController from './AudioController';
-import { Icon } from '@blueprintjs/core';
+import { Icon, Spinner } from '@blueprintjs/core';
 
 interface IProps {
   darkTheme: boolean,
@@ -19,6 +19,7 @@ interface IProps {
 
 interface IState {
   play: boolean,
+  canPlay: boolean,
   blobAudioUrl: string,
   position: { x: number, y: number }
 }
@@ -36,6 +37,7 @@ class VideoPlayer extends React.Component<IProps, IState> {
     super(props);
     this.state = {
       play: false,
+      canPlay: false,
       blobAudioUrl: "",
       position: { x: 0, y: 0 },
     }
@@ -142,6 +144,9 @@ class VideoPlayer extends React.Component<IProps, IState> {
     this.hiddenPlayClick = true;
     this.setState({ play: true });
   }
+  private handleAudioCanplay = () => {
+    this.setState({ canPlay: true })
+  }
   private handleAudioPlay = () => {
     if (!this.hiddenPlayClick) {
       this.hiddenPlayClick = true;
@@ -172,10 +177,14 @@ class VideoPlayer extends React.Component<IProps, IState> {
               darkTheme={darkTheme}
             />
             <div className={ this.hiddenPlayClick ? "InterfaceView MarkView hidden" : "InterfaceView MarkView"}>
-              <button className="none" onClick={this.handlePlayClick}
-                style={{padding: '20px', borderRadius: '100px', border: 'none', cursor: 'pointer', backgroundColor: "#5e9af9"}}>
-                <Icon icon="play" iconSize={72} style={{position:'relative', right: '-2px'}} color="rgba(255, 255, 255, 0.9)" />
-              </button>
+              {
+                (this.state.canPlay)
+                ? (<button className="none" onClick={this.handlePlayClick}
+                  style={{padding: '20px', borderRadius: '100px', border: 'none', cursor: 'pointer', backgroundColor: "#5e9af9"}}>
+                  <Icon icon="play" iconSize={72} style={{position:'relative', right: '-2px'}} color="rgba(255, 255, 255, 0.9)" />
+                </button>)
+                : (<Spinner size={70} />)
+              }
             </div>
           </div>
         </div>
@@ -184,6 +193,7 @@ class VideoPlayer extends React.Component<IProps, IState> {
             ref={this.audioRef}
             audioUrl={blobAudioUrl}
             play={play}
+            onCanPlay={this.handleAudioCanplay}
             onPlay={this.handleAudioPlay} 
             onPause={this.handleAudioPause}
             onEnded={this.handleAudioEnded}
