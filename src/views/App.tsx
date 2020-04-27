@@ -2,19 +2,21 @@ import React from 'react';
 import { Router, Route, Switch, Redirect, NavLink } from 'react-router-dom';
 import { Navbar, Button, Classes, Menu, Popover, Toaster } from '@blueprintjs/core';
 import history from './history';
-import Home from './home/Home';
-import Video from './video/Video';
-import Record from './record/Record';
-import Course from './course/Course';
-import Lesson from './lesson/Lesson';
-import Login from './login/Login';
-import Signup from './signup/Signup';
-import Code from './code/Code';
-import UserState from './user-state/UserState';
+import loadable from '@loadable/component';
 import { store, SET_THEME, IStoreState, SET_USER } from './state'
 import Axios from 'axios';
 import { baseURL } from './config';
 import { toastRef, addSuccessToast } from './toaster';
+
+const Home      = loadable(() => import('./home/Home'));
+const Video     = loadable(() => import('./video/Video'));
+const Record    = loadable(() => import('./record/Record'));
+const Course    = loadable(() => import('./course/Course'));
+const Lesson    = loadable(() => import('./lesson/Lesson'));
+const Login     = loadable(() => import('./login/Login'));
+const Signup    = loadable(() => import('./signup/Signup'));
+const Code      = loadable(() => import('./code/Code'));
+const UserState = loadable(() => import('./user-state/UserState'));
 
 interface IAPPProps {
   id: string,
