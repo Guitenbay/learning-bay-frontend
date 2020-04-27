@@ -204,8 +204,8 @@ class LessonPage extends React.Component<RouteComponentProps, IState> {
     const { courseUri } = this.props.location.state as { courseUri: string };
     const sections = sectionList.map(section => (
       <div key={section.uri} className="section">
-        {/* eslint-disable-next-line */}
         { section.title.length > 0
+          /* eslint-disable-next-line */
           ? (<H2 className={skeleton ? "bp3-skeleton": ""}><a href="#">¶</a>{`${section.title}`}</H2>)
           : null }
         <ReactMarkdown source={Base64.decode(section.content)}
