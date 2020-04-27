@@ -9,29 +9,25 @@ module.exports = function override(config, env) {
       new CleanWebpackPlugin(), // 在打包的时候会删除之前的打包目录
       new BundleAnalyzerPlugin(), // 在打包结束的时候，启动一个服务在浏览器查看打包的大小和包含的内容等
     );
-    config.output.chunkFilename = 'static/js/[name].[chunkhash].chunk.js';
+    config.output.chunkFilename = 'static/js/[name].[chunkhash:8].chunk.js';
     config.optimization = Object.assign(config.optimization, {
       splitChunks: { // 拆包，将一个大的 js 文件拆成几个小的 js 文件
         chunks: 'all',
         minSize: 30000,
         maxSize: 0,
         minChunks: 1,
-        maxAsyncRequests: 6,
-        maxInitialRequests: 6,
+        maxAsyncRequests: 5,
+        maxInitialRequests: 5,
         automaticNameDelimiter: '~',
         name: true,
         cacheGroups: {
-          monaco: { // 拆分 monaco-editor 组件
-            priority: 1, 
-            test: /[\\/]node_modules[\\/](react-monaco-editor|monaco-editor|monaco-editor-webpack-plugin)[\\/]/,
-          },
           blueprintui: { // 拆分 UI 框架
             priority: 2,  
             test: /[\\/]node_modules[\\/](@blueprintjs)[\\/]/,  //(module) => (/antd/.test(module.context)),
           },
           basic: { // 拆分基础插件
             priority: 3, 
-            test: /[\\/]node_modules[\\/](react|react-dom|react-router-dom|redux|axios)[\\/]/,
+            test: /[\\/]node_modules[\\/](react|react-dom|react-router|react-router-dom|redux|axios|js-base64)[\\/]/,
           },
           vendors: {
             test: /[\\/]node_modules[\\/]/,

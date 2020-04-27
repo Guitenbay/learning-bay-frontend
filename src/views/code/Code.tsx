@@ -1,18 +1,20 @@
 import React, { Fragment, RefObject, createRef } from 'react';
-import Footer from '../../components/Footer';
-import { store, SET_USER } from '../state';
-import CodeEditor from '../../components/CodeEditor';
-import { Directory, Depandency } from '../../components/sidebar.d';
-import './Code.css'
-import { RouteComponentProps } from 'react-router-dom';
-import { Axios, fusekiURL, baseURL } from '../config';
+import { Base64 } from 'js-base64';
 import { H2, Button, Icon } from '@blueprintjs/core';
+import { RouteComponentProps } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
-import { addErrorToast, addSuccessToast } from '../toaster';
+
+import Footer from '../../components/Footer';
+import CodeEditor from '../../components/CodeEditor';
 import CodeBlock from '../CodeBlock';
-import '../../assets/markdown.css'
-import { CodeQuestion, Lesson } from '../model';
 import Recommend from '../../components/Recommend';
+import { store, SET_USER } from '../state';
+import { Directory, Depandency } from '../../components/sidebar.d';
+import { Axios, fusekiURL, baseURL } from '../config';
+import { addErrorToast, addSuccessToast } from '../toaster';
+import { CodeQuestion, Lesson } from '../model';
+import '../../assets/markdown.css'
+import './Code.css'
 
 const dirs: Array<Directory> = [{
   name: 'src',

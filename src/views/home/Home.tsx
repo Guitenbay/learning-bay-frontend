@@ -1,11 +1,13 @@
 import React, { Fragment } from 'react';
 import { Link, RouteComponentProps } from 'react-router-dom';
-import './Home.css';
-import Footer from '../../components/Footer';
 import { Card, Elevation, Button, H5, OL } from '@blueprintjs/core';
+import { Base64 } from 'js-base64';
 import Axios from 'axios';
+
+import Footer from '../../components/Footer';
 import { fusekiURL } from '../config';
 import { Course } from '../model.d'
+import './Home.css';
 
 interface IState {
   courseList: Array<Course>

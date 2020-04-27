@@ -1,18 +1,20 @@
 import React, { Fragment } from 'react';
-import Footer from '../../components/Footer';
-import { baseURL, fusekiURL } from '../config';
-import VideoPlayer from '../../components/VideoPlayer';
-import { store, SET_USER } from '../state';
+import ReactMarkdown from 'react-markdown';
 import { RouteComponentProps } from 'react-router-dom';
 import { H1, Button, Icon, H2, Intent } from '@blueprintjs/core';
+import { Base64 } from 'js-base64';
 import Axios from 'axios';
-import { Section, Lesson } from '../model.d';
-import ReactMarkdown from 'react-markdown';
-import '../../assets/markdown.css'
+
+import Footer from '../../components/Footer';
+import VideoPlayer from '../../components/VideoPlayer';
 import CodeBlock from '../CodeBlock';
-import './Lesson.css'
-import { addSuccessToast, addErrorToast } from '../toaster';
 import Recommend from '../../components/Recommend';
+import { baseURL, fusekiURL } from '../config';
+import { store, SET_USER } from '../state';
+import { Section, Lesson } from '../model.d';
+import { addSuccessToast, addErrorToast } from '../toaster';
+import '../../assets/markdown.css'
+import './Lesson.css'
 
 interface IState {
   sectionList: Array<Section>,

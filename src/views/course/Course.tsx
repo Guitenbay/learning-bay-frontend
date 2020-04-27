@@ -2,11 +2,13 @@ import React, { Fragment } from 'react';
 import { Button, H1, Icon } from '@blueprintjs/core';
 import Axios from 'axios';
 import { Link, RouteComponentProps } from 'react-router-dom';
+import { Base64 } from 'js-base64';
+
 import Footer from '../../components/Footer';
 import { fusekiURL } from '../config';
-import './Course.css';
 import { Chapter, Lesson, Course } from '../model.d';
 import { store } from '../state';
+import './Course.css';
 
 interface IState {
   title: string,
