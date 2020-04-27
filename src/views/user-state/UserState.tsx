@@ -165,7 +165,7 @@ class UserState extends React.Component<RouteComponentProps, IState> {
               {menuItemUI}
             </Menu>
           </Popover>
-          <div>
+          <div style={{marginTop: '20px'}}>
           <ButtonGroup minimal={true}>
             <Button icon="zoom-in" onClick={() => {
               const current = Math.min(gravityList.length-1, currentGravityIndex + 1);

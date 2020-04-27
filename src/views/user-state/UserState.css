@@ -4,3 +4,13 @@
 h1 {
   display: block;
 }
+.title-with-back {
+  position: relative;
+}
+
+.title-with-back > .back {
+  position: absolute;
+  left: -50px;
+  top: 50%;
+  transform: translateY(-50%);
+}
