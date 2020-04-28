@@ -10,7 +10,7 @@ import Footer from '../../components/Footer';
 import VideoPlayer from '../../components/VideoPlayer';
 import CodeBlock from '../CodeBlock';
 import Recommend from '../../components/Recommend';
-import { baseURL, fusekiURL } from '../config';
+import { baseURL, fusekiURL, aliyunOSSURL } from '../config';
 import { store, SET_USER } from '../state';
 import { Section, Lesson } from '../model.d';
 import { addSuccessToast, addErrorToast } from '../toaster';
@@ -233,13 +233,16 @@ class LessonPage extends React.Component<RouteComponentProps, IState> {
       { (mediaFilename !== '') 
         ? (<VideoPlayer
           darkTheme={darkTheme}
-          videoURL={`${baseURL}/video/${mediaFilename}.mmcv`}
-          audioURL={`${baseURL}/audio/${mediaFilename}.webm`}
+          videoURL={`${aliyunOSSURL}/videos/${mediaFilename}`}
+          audioURL={`${aliyunOSSURL}/audios/${mediaFilename}`}
         />)
+        // 暂时的代码
+        // TODO: 
+        // : null
         : (<VideoPlayer
           darkTheme={darkTheme}
-          videoURL={`${baseURL}/video/jsmm1.mmcv`}
-          audioURL={`${baseURL}/audio/jsmm1.webm`}
+          videoURL={`${aliyunOSSURL}/videos/jsmm1`}
+          audioURL={`${aliyunOSSURL}/audios/jsmm1`}
         />)
       }
       <div className="Page lesson">
