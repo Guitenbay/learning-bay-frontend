@@ -2,6 +2,7 @@ import React, { Fragment } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { RouteComponentProps } from 'react-router-dom';
 import { H1, Button, Icon, H2, Intent } from '@blueprintjs/core';
+import StickyBox from "react-sticky-box";
 import { Base64 } from 'js-base64';
 import Axios from 'axios';
 
@@ -192,6 +193,12 @@ class LessonPage extends React.Component<RouteComponentProps, IState> {
       }
     }).catch(err => console.error(err));
   }
+  scrollToAnchor = (anchorName: string) => {
+    if (anchorName) {
+      let anchorElement = document.getElementById(anchorName);
+      if(anchorElement) { anchorElement.scrollIntoView({ behavior: 'smooth' }); }
+    }
+  }
   render() {
     if (this.props.location.state === undefined) {
       this.props.history.push('/');
@@ -202,19 +209,26 @@ class LessonPage extends React.Component<RouteComponentProps, IState> {
       reviewList, recommendList, showNoneRecommend
     } = this.state;
     const { courseUri } = this.props.location.state as { courseUri: string };
-    const sections = sectionList.map(section => (
+    const sections = sectionList.map((section, index) => (
       <div key={section.uri} className="section">
         { section.title.length > 0
           /* eslint-disable-next-line */
-          ? (<H2 className={skeleton ? "bp3-skeleton": ""}><a href="#">¶</a>{`${section.title}`}</H2>)
+          ? (<H2 className={skeleton ? "bp3-skeleton": ""}><a id={`section-${index}`} data-anchor>¶</a>{section.title}</H2>)
           : null }
         <ReactMarkdown source={Base64.decode(section.content)}
           className={skeleton ? "bp3-skeleton markdown-body": "markdown-body"}
           renderers={{ code: CodeBlock }}
-        />
+          />
         {/* <Button icon="hand" intent="success" text="试一试" onClick={this.handleCodeQuestionClick(section.codeQuestionUri)} /> */}
       </div>
     ));
+    const sectionsLiUI = sectionList.map(({title, uri}, index) => {
+      return title.length === 0 || title === undefined || title === ''
+      ? null
+      /* eslint-disable-next-line */
+      : (<li key={uri}><a onClick={() => this.scrollToAnchor(`section-${index}`)}>
+      <span className={skeleton ? "bp3-skeleton": ""}>{title}</span></a></li>);
+    })
     return (<Fragment>
       { (mediaFilename !== '') 
         ? (<VideoPlayer
@@ -229,28 +243,37 @@ class LessonPage extends React.Component<RouteComponentProps, IState> {
         />)
       }
       <div className="Page lesson">
-        <article>
-          <H1 className={ skeleton ? "title-with-back bp3-skeleton" : "title-with-back"}>
-            <Button minimal className="back"
-              onClick={() => this.props.history.push(`/course/${Base64.encode(courseUri)}`)}
-            ><Icon icon="arrow-left" iconSize={25} /></Button>
-            { title }</H1>
-          {sections}
-          {
-            (!codeQuestionUri || !codeQuestionUri.startsWith('http://biki.wiki/learning-bay')) 
-            ? (<Button
-                className={skeleton ? "bp3-skeleton": ""}
-                intent={Intent.SUCCESS}
-                icon="confirm"
-                onClick={() => this.handlePunchInClick()}
-              >学完打卡</Button>)
-            : (<Button
-                className={skeleton ? "bp3-skeleton": ""}
-                intent={Intent.PRIMARY}
-                icon="confirm"
-                onClick={() => this.handlePunchInClick(codeQuestionUri)}
-              >学完打卡并测试</Button>)
-          }
+        <article className="flex" style={{alignItems: 'flex-start'}}>
+          <div id="article-main" className="auto">
+            <H1 className={ skeleton ? "title-with-back bp3-skeleton" : "title-with-back"}>
+              <Button minimal className="back"
+                onClick={() => this.props.history.push(`/course/${Base64.encode(courseUri)}`)}
+              ><Icon icon="arrow-left" iconSize={25} /></Button>
+              {/* eslint-disable-next-line */}
+              <a id="title" data-anchor />{ title }</H1>
+            {sections}
+            {
+              (!codeQuestionUri || !codeQuestionUri.startsWith('http://biki.wiki/learning-bay')) 
+              ? (<Button
+                  className={skeleton ? "bp3-skeleton": ""}
+                  intent={Intent.SUCCESS}
+                  icon="confirm"
+                  onClick={() => this.handlePunchInClick()}
+                >学完打卡</Button>)
+              : (<Button
+                  className={skeleton ? "bp3-skeleton": ""}
+                  intent={Intent.PRIMARY}
+                  icon="confirm"
+                  onClick={() => this.handlePunchInClick(codeQuestionUri)}
+                >学完打卡并测试</Button>)
+            }
+          </div>
+          <StickyBox offsetTop={70} className="none sticky-catalog">
+            <strong className={ skeleton ? "title-with-back bp3-skeleton" : ""}>
+              {/* eslint-disable-next-line */}
+              <a onClick={() => this.scrollToAnchor('title')}>{ title }</a></strong>
+            <ul>{sectionsLiUI}</ul>
+          </StickyBox>
         </article>
         <article>
           <Recommend history={this.props.history} 

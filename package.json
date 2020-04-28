@@ -42,6 +42,7 @@
     "react-router-dom": "^5.1.2",
     "react-scripts": "^3.4.0",
     "react-slick": "^0.25.2",
+    "react-sticky-box": "^0.9.3",
     "react-syntax-highlighter": "^12.2.1",
     "redux": "^4.0.5",
     "shortid": "^2.2.15",
