@@ -118,7 +118,7 @@ class App extends React.Component<IAPPProps, IAPPState> {
               <Route path="/record"><Record /></Route>
               <Route path="/course/:uri" component={ Course } />
               <Route path="/lesson/:uri" component={ Lesson } />
-              <Route path="/code" component={ Code }></Route>
+              <Route path="/code/:uri" component={ Code }></Route>
               <Route path="/user-state" component={ UserState }></Route>
               <Route path="/error"><div>404 Oops...</div></Route>
               <Route path="*"><Redirect to="/error" /></Route>

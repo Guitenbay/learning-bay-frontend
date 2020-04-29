@@ -82,9 +82,9 @@ class Code extends React.Component<RouteComponentProps, IState> {
     }
   }
   componentDidMount() {
-    const state = this.props.location.state as {uri: string | undefined};
-    if (typeof state?.uri === 'string') {
-      this.getCodeQuestion(state?.uri as string).then(codeQuestion => {
+    const { uri } = this.props.match.params as {uri: string};
+    if (typeof uri === 'string') {
+      this.getCodeQuestion(Base64.decode(uri as string)).then(codeQuestion => {
         if (codeQuestion === undefined) {
           addErrorToast("获取数据失败");
         } else {
@@ -125,7 +125,7 @@ class Code extends React.Component<RouteComponentProps, IState> {
     }).catch(err => console.error(err));
   }
   render() {
-    if (this.props.location.state === undefined) {
+    if (this.props.match.params === undefined) {
       this.props.history.push('/');
       return null;
     }
@@ -159,12 +159,15 @@ class Code extends React.Component<RouteComponentProps, IState> {
               : null
           }
           <article>
-            <Recommend history={this.props.history} 
-              reviewList={reviewList} 
-              recommendList={recommendList}
-              showNoneRecommend={showNoneRecommend}
-              courseUri={(this.props.location.state as {courseUri: string}).courseUri}
-              />
+            { !!codeQuestion?.courseUri
+              ? (<Recommend history={this.props.history} 
+                reviewList={reviewList} 
+                recommendList={recommendList}
+                showNoneRecommend={showNoneRecommend}
+                courseUri={(codeQuestion as CodeQuestion).courseUri}
+                />)
+              : null
+            }
           </article>
         </div>
         <Footer />

@@ -93,7 +93,7 @@ class CoursePage extends React.Component<RouteComponentProps, IState> {
       );
       const list = lessons.map(lesson => (
         <li key={lesson.uri}>
-          <Link to={{ pathname: `/lesson/${Base64.encode(lesson.uri)}`, state: {courseUri: this.uri} }}>
+          <Link to={{ pathname: `/lesson/${Base64.encode(lesson.uri)}`, search: `course_uri=${this.uri}` }}>
             {lesson.title}
           </Link>
         </li>

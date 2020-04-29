@@ -5,6 +5,7 @@ import { H1, Button, Icon, H2, Intent } from '@blueprintjs/core';
 import StickyBox from "react-sticky-box";
 import { Base64 } from 'js-base64';
 import Axios from 'axios';
+import qs from 'qs';
 
 import Footer from '../../components/Footer';
 import VideoPlayer from '../../components/VideoPlayer';
@@ -30,6 +31,7 @@ interface IState {
 
 class LessonPage extends React.Component<RouteComponentProps, IState> {
   private uri: string = '';
+  private query: { course_uri: string};
   constructor(props: RouteComponentProps) {
     super(props);
     this.state = {
@@ -42,6 +44,7 @@ class LessonPage extends React.Component<RouteComponentProps, IState> {
       showNoneRecommend: false,
       skeleton: true
     }
+    this.query = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
   }
   async getLesson(uri: string) {
     const resp = await Axios.get(fusekiURL+"/lesson", { params: { uri } });
@@ -71,7 +74,7 @@ class LessonPage extends React.Component<RouteComponentProps, IState> {
     }
   }
   async getRecommend() {
-    const { courseUri } = this.props.location.state as { courseUri: string };
+    const courseUri = this.query.course_uri;
     if (courseUri === '') return [];
     const resp = await Axios.get(baseURL+"/recommend", { params: { courseUri }, withCredentials: true });
     const { res, data } = resp.data;
@@ -83,7 +86,7 @@ class LessonPage extends React.Component<RouteComponentProps, IState> {
     }
   }
   async getReviewRecommend() {
-    const { courseUri } = this.props.location.state as { courseUri: string };
+    const courseUri = this.query.course_uri;
     if (courseUri === '') return [];
     const resp = await Axios.get(baseURL+"/recommend/review", { params: { courseUri }, withCredentials: true });
     const { res, data } = resp.data;
@@ -170,7 +173,7 @@ class LessonPage extends React.Component<RouteComponentProps, IState> {
       if (res) {
         addSuccessToast(`打卡成功！${data || ''}`);
         if (codeQuestionUri !== '') {
-          this.props.history.push('/code', { uri: codeQuestionUri, courseUri: (this.props.location.state as {courseUri: string}).courseUri });
+          this.props.history.push(`/code/${Base64.encode(codeQuestionUri)}`);
         } else {
           // 获取推荐课时
           return Promise.all([this.getRecommend(), this.getReviewRecommend()]);
@@ -200,7 +203,7 @@ class LessonPage extends React.Component<RouteComponentProps, IState> {
     }
   }
   render() {
-    if (this.props.location.state === undefined) {
+    if (this.query === undefined) {
       this.props.history.push('/');
       return null;
     }
@@ -208,7 +211,7 @@ class LessonPage extends React.Component<RouteComponentProps, IState> {
     const { sectionList, mediaFilename, title, codeQuestionUri, skeleton,
       reviewList, recommendList, showNoneRecommend
     } = this.state;
-    const { courseUri } = this.props.location.state as { courseUri: string };
+    const courseUri = this.query.course_uri;
     const sections = sectionList.map((section, index) => (
       <div key={section.uri} className="section">
         { section.title.length > 0
