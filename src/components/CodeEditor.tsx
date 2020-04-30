@@ -2,11 +2,12 @@ import React, { createRef, RefObject } from "react";
 import MonacoEditor from "react-monaco-editor";
 import * as monacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
 import { v5 as uuidv5 } from 'uuid';
+import IO from "socket.io-client";
 import { Directory, Depandency } from "./sidebar.d";
 import { IResizeEntry, ResizeSensor, Divider, Button, Tree, ITreeNode, H5 } from "@blueprintjs/core";
-import IO from "socket.io-client";
 import { baseURL } from "../views/config";
 import './CodeEditor.css'
+import { store } from "../views/state";
 
 interface IProps { 
   darkTheme: boolean
@@ -76,7 +77,7 @@ class CodeEditor extends React.Component<IProps, IState> {
     if (typeof content === 'undefined') content = '';
     if (!this.client.connected) this.client.connect();
     this.client.emit('code', {
-      extname: 'js', filename: 'child', uid: 'guitenbay',
+      extname: 'js', filename: 'child', uid: store.getState().username,
       codeContent: content
     });
     this.props.onRunCode?.call(this, content);
