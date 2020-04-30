@@ -72,7 +72,7 @@ class Signup extends React.Component<RouteComponentProps, IState> {
       <div className="Page home">
         <article className="flex evenly">
           <img src={signupImg} alt="golden gate bridge san francisco california"
-            style={{height: '600px',width: '640px', alignSelf: 'center'}}
+            style={{height: '600px', width: '50%', alignSelf: 'center', marginRight: '10px'}}
           />
           <div className="input-card">
             <H2>Get Start to LearningBay</H2>
