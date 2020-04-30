@@ -75,7 +75,7 @@ class Signup extends React.Component<RouteComponentProps, IState> {
             style={{height: '600px', width: '50%', alignSelf: 'center', marginRight: '10px'}}
           />
           <div className="input-card">
-            <H2>Get Start to LearningBay</H2>
+            <H2 className="big-title">Get Start to LearningBay</H2>
             <FormGroup
               helperText="用户名只允许大小写字母、数字、中文、下划线和减号，位数应 2 到 16 位..."
               label="用户名"

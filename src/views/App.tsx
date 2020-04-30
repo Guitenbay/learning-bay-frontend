@@ -8,15 +8,21 @@ import Axios from 'axios';
 import { baseURL } from './config';
 import { toastRef, addSuccessToast } from './toaster';
 
-const Home      = loadable(() => import('./home/Home'));
-const Video     = loadable(() => import('./video/Video'));
-const Record    = loadable(() => import('./record/Record'));
-const Course    = loadable(() => import('./course/Course'));
-const Lesson    = loadable(() => import('./lesson/Lesson'));
-const Login     = loadable(() => import('./login/Login'));
-const Signup    = loadable(() => import('./signup/Signup'));
-const Code      = loadable(() => import('./code/Code'));
-const UserState = loadable(() => import('./user-state/UserState'));
+const loadComponent = (path: string) => loadable(() => import(`${path}`), {
+  fallback: <div style={{
+    position: 'relative', top: '45%', transform: 'translateY(-50%)',
+    textAlign: 'center', fontSize: '20pt'
+  }}>Loading...</div>,
+});
+const Home      = loadComponent('./home/Home');
+const Video     = loadComponent('./video/Video');
+const Record    = loadComponent('./record/Record');
+const Course    = loadComponent('./course/Course');
+const Lesson    = loadComponent('./lesson/Lesson');
+const Login     = loadComponent('./login/Login');
+const Signup    = loadComponent('./signup/Signup');
+const Code      = loadComponent('./code/Code');
+const UserState = loadComponent('./user-state/UserState');
 
 interface IAPPProps {
   id: string,

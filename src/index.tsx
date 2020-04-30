@@ -14,9 +14,7 @@ ReactDOM.render(
         <p style={{textAlign: 'center'}}>屏幕宽度太小了，请更换设备或调大屏幕宽度</p>
       </div>
     ) : (
-      <React.Suspense fallback={() => (<div>loading</div>)}>
-        <App id="app" />
-      </React.Suspense>
+      <App id="app" />
     )
   }
 </Media>, document.getElementById('root'));

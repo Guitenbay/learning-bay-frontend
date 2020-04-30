@@ -72,7 +72,7 @@ class Login extends React.Component<RouteComponentProps, IState> {
       <div className="Page home">
         <article>
           <div className="input-card">
-            <H2>Log in to LearningBay</H2>
+            <H2 className="big-title">Log in to LearningBay</H2>
             <FormGroup
               helperText="用户名只允许大小写字母、数字、中文、下划线和减号，位数应 2 到 16 位..."
               label="用户名"

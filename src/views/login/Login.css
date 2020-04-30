@@ -6,3 +6,10 @@
 .input-card > * {
   margin-bottom: 30px;
 }
+h2.big-title {
+  font-weight: bold;
+  font-size: 38pt;
+  line-height: 33pt;
+  position: relative;
+  left: -3px;
+}
