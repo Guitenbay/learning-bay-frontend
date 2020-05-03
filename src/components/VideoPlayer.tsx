@@ -43,7 +43,6 @@ class VideoPlayer extends React.Component<IProps, IState> {
     }
   }
   private playFrame = () => {
-    const currentTime = Date.now();
     // console.log(this.editorData.length, this.currentFrameNumber);
     if (this.editorData.length <= this.currentFrameNumber) {
       // this.setState({ play: false });
@@ -76,6 +75,7 @@ class VideoPlayer extends React.Component<IProps, IState> {
         this.editorRef.current?.editor?.restoreViewState((currentData as IEditorFrame).viewState || ({} as monacoEditor.editor.ICodeEditorViewState));
       }
     }
+    const currentTime = Date.now();
     this.currentFrameNumber++;
     let ahead = 0;
     if (this.previousTime > 0) {
@@ -84,7 +84,9 @@ class VideoPlayer extends React.Component<IProps, IState> {
     }
     this.previousTime = Date.now() + ahead;
     // 每隔 0.1s 调用函数
-    if (this.state.play) setTimeout(() => requestAnimationFrame(this.playFrame), (100 + ahead > 0) ? 100 + ahead: 0);
+    if (this.state.play) {
+      (100 + ahead > 0) ? setTimeout(() => requestAnimationFrame(this.playFrame),  100 + ahead) : requestAnimationFrame(this.playFrame);
+    }
   }
   private async getVideoEditorData(videoURL: string) {
     const resp = await blobGet(videoURL);

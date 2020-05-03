@@ -90,18 +90,17 @@ class Record extends React.Component<{}, IState> {
     });
   }
   private async createMMCVFile(filename: string) {
-    const resp = await Axios.put(`${baseURL}/video/1.mmcv`);
+    const resp = await Axios.put(`${baseURL}/video/1`);
     return resp.data.res;
   }
   private async uploadEditorFrame(frames: Array<IEditorFrame>) {
     const data = Base64.encode(JSON.stringify(frames));
     const blob = new Blob([data], {type : 'application/octet-stream'});
-    // const resp = await axios.post(`${baseURL}/video/1.mmcv`, blob);
-    const resp = await blobPost(`${baseURL}/video/1.mmcv`, blob);
+    // const resp = await axios.post(`${baseURL}/video/1`, blob);
+    const resp = await blobPost(`${baseURL}/video/1`, blob);
     return resp;
   }
   private recordFrame = () => {
-    const currentTime = Date.now();
     let frame = Object.assign({}, {
       index: this.currentFrameNumber,
       mouseMove: this.currentMousePos,
@@ -118,6 +117,7 @@ class Record extends React.Component<{}, IState> {
     this.currentFrameNumber++;
     this.cacheMouseEvents = [];
 
+    const currentTime = Date.now();
     let ahead = 0;
     if (this.previousTime > 0) {
       // console.log(currentTime, this.previousTime, currentTime - this.previousTime);
@@ -186,8 +186,9 @@ class Record extends React.Component<{}, IState> {
     this.setState({ record: !this.state.record });
   }
   private handleCreateClick = () => {
-    this.createMMCVFile('.mmcv').then(res => {
+    this.createMMCVFile('').then(res => {
       addSuccessToast('创建文件成功');
+      this.cacheFrames = [];
       this.currentFrameNumber = 0;
       this.previousTime = -1;
       this.setState({created: res});
@@ -198,7 +199,7 @@ class Record extends React.Component<{}, IState> {
   // }
   onStop(recordedBlob: ReactMicStopEvent) {
     // console.log('recordedBlob is: ', recordedBlob);
-    blobPost(`${baseURL}/audio/1.webm`, recordedBlob.blob).then(({ res }) => {
+    blobPost(`${baseURL}/audio/1`, recordedBlob.blob).then(({ res }) => {
       if (res) {
         addSuccessToast('上传音频成功');
       } else {
