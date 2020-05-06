@@ -31,10 +31,11 @@ a:hover { color: var(--uxa-link-hover-color) }
 
 .Page, footer {
   padding: var(--page-padding) calc(var(--page-padding) + 20px);
+  padding-bottom: 20px;
 }
 
 article {
-  margin: 20px auto;
+  margin: 20px auto 10px auto;
   max-width: var(--main-width);
 }
 

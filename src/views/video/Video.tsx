@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { aliyunOSSURL } from '../config';
+import { baseURL } from '../config';
 import Footer from '../../components/Footer';
 import { store } from '../state';
 import VideoPlayer from '../../components/VideoPlayer';
@@ -11,8 +11,8 @@ class Video extends React.Component {
       <Fragment>
         <VideoPlayer
           darkTheme={darkTheme}
-          videoURL={`${aliyunOSSURL}/videos/1`}
-          audioURL={`${aliyunOSSURL}/audios/1`}
+          videoURL={`${baseURL}/video/1`}
+          audioURL={`${baseURL}/audio/1`}
         />
         <div className="Page">
           <article>

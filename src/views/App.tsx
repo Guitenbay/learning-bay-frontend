@@ -15,7 +15,7 @@ const loadComponent = (path: string) => loadable(() => import(`${path}`), {
   }}>Loading...</div>,
 });
 const Home      = loadComponent('./home/Home');
-const Video     = loadComponent('./video/Video');
+// const Video     = loadComponent('./video/Video');
 const Record    = loadComponent('./record/Record');
 const Course    = loadComponent('./course/Course');
 const Lesson    = loadComponent('./lesson/Lesson');
@@ -23,6 +23,7 @@ const Login     = loadComponent('./login/Login');
 const Signup    = loadComponent('./signup/Signup');
 const Code      = loadComponent('./code/Code');
 const UserState = loadComponent('./user-state/UserState');
+const About     = loadComponent('./about/About');
 
 interface IAPPProps {
   id: string,
@@ -120,12 +121,13 @@ class App extends React.Component<IAPPProps, IAPPState> {
               <Route exact path="/" component={ Home } />
               <Route path="/login" component={ Login } />
               <Route path="/signup" component={ Signup } />
-              <Route path="/play"><Video /></Route>
+              {/* <Route path="/play"><Video /></Route> */}
               <Route path="/record"><Record /></Route>
               <Route path="/course/:uri" component={ Course } />
               <Route path="/lesson/:uri" component={ Lesson } />
               <Route path="/code/:uri" component={ Code }></Route>
               <Route path="/user-state" component={ UserState }></Route>
+              <Route path="/about" component={ About }></Route>
               <Route path="/error"><div>404 Oops...</div></Route>
               <Route path="*"><Redirect to="/error" /></Route>
             </Switch>

@@ -8,6 +8,7 @@ import Footer from '../../components/Footer';
 import { fusekiURL } from '../config';
 import { Course } from '../model.d'
 import './Home.css';
+import QRCodeBlock from '../../components/QRCodeBlock';
 
 interface IState {
   courseList: Array<Course>
@@ -62,6 +63,7 @@ class Home extends React.Component<RouteComponentProps, IState> {
             {/* <div><Link to="/play">Play</Link></div>
             <div><Link to="/record">Record</Link></div>
             <div><Link to="/code">Code</Link></div> */}
+            <QRCodeBlock />
           </article>
         </div>
         <Footer />
