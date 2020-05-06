@@ -4,7 +4,7 @@ import QRCodeBlock from '../../components/QRCodeBlock';
 
 const About = () => (<Fragment>
   <div className="Page about">
-    <article style={{fontSize: '12pt', letterSpacing: '1px'}}>
+    <article style={{letterSpacing: '1px'}}>
       <h1 style={{fontSize: '27pt'}}>LearningBay 编程学习平台</h1>
       <p>我们旨在设计一种编程学习平台。</p>
       <p>
