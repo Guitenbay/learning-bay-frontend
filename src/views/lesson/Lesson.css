@@ -2,6 +2,10 @@
   flex: 0 0 auto;
 }
 
+.lesson article {
+  line-height: 20pt;
+}
+
 h1, h2 {
   display: inline-block;
 }
