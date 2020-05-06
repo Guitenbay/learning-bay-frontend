@@ -239,14 +239,14 @@ class LessonPage extends React.Component<RouteComponentProps, IState> {
           videoURL={`${aliyunOSSURL}/videos/${mediaFilename}`}
           audioURL={`${aliyunOSSURL}/audios/${mediaFilename}`}
         />)
+        : null
         // 暂时的代码
         // TODO: 
-        // : null
-        : (<VideoPlayer
-          darkTheme={darkTheme}
-          videoURL={`${aliyunOSSURL}/videos/jsmm1`}
-          audioURL={`${aliyunOSSURL}/audios/jsmm1`}
-        />)
+        // : (<VideoPlayer
+        //   darkTheme={darkTheme}
+        //   videoURL={`${aliyunOSSURL}/videos/jsmm1`}
+        //   audioURL={`${aliyunOSSURL}/audios/jsmm1`}
+        // />)
       }
       <div className="Page lesson">
         <article className="flex" style={{alignItems: 'flex-start'}}>
