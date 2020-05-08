@@ -55,18 +55,22 @@ class CoursePage extends React.Component<RouteComponentProps, IState> {
     }
   }
   componentDidMount() {
-    const { uri } = this.props.match.params as { uri: string };
-    if (!!uri) {
-      this.uri = Base64.decode(uri as string);
-      this.getCourse(this.uri).then(course => {
-        this.setState({ title: course.title });
-        return this.getChapterList(this.uri);
-      }).then(chapterList => {
-        this.setState({ chapterList }, () => {
-          // 设置第一章为打开状态
-          this.handlerChapterClick(0)();
-        });
-      }).catch(err => console.error(err));
+    try {
+      const { uri } = this.props.match.params as { uri: string };
+      if (!!uri) {
+        this.uri = Base64.decode(uri as string);
+        this.getCourse(this.uri).then(course => {
+          this.setState({ title: course.title });
+          return this.getChapterList(this.uri);
+        }).then(chapterList => {
+          this.setState({ chapterList }, () => {
+            // 设置第一章为打开状态
+            this.handlerChapterClick(0)();
+          });
+        }).catch(err => console.error(err));
+      }
+    } catch (err) {
+      this.props.history.push('/error');
     }
   }
   handlerChapterClick = (index: number) => {

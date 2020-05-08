@@ -12,6 +12,9 @@ ReactDOM.render(
     matches.small ? (
       <div id="device-error" className="flex vertical center">
         <p style={{textAlign: 'center'}}>屏幕宽度太小了，请更换设备或调大屏幕宽度</p>
+        <div style={{textAlign: 'center', marginTop: '50px', fontSize: '10pt'}}>
+          <a href="http://www.beian.miit.gov.cn">闽ICP备20008298号-1</a>
+        </div>
       </div>
     ) : (
       <App id="app" />

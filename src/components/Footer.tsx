@@ -17,6 +17,9 @@ const Footer: FunctionComponent = () => (
           <Link to="/about">About</Link>
         </div>
       </div>
+      <div style={{textAlign: 'center', marginTop: '10px', fontSize: '10pt'}}>
+        <a href="http://www.beian.miit.gov.cn" className="bp3-text-disabled">闽ICP备20008298号-1</a>
+      </div>
     </div>
   </footer>
 );

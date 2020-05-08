@@ -82,15 +82,19 @@ class Code extends React.Component<RouteComponentProps, IState> {
     }
   }
   componentDidMount() {
-    const { uri } = this.props.match.params as {uri: string};
-    if (typeof uri === 'string') {
-      this.getCodeQuestion(Base64.decode(uri as string)).then(codeQuestion => {
-        if (codeQuestion === undefined) {
-          addErrorToast("获取数据失败");
-        } else {
-          this.setState({ codeQuestion });
-        }
-      }).catch(err => console.error(err));
+    try {
+      const { uri } = this.props.match.params as {uri: string};
+      if (typeof uri === 'string') {
+        this.getCodeQuestion(Base64.decode(uri as string)).then(codeQuestion => {
+          if (codeQuestion === undefined) {
+            addErrorToast("获取数据失败");
+          } else {
+            this.setState({ codeQuestion });
+          }
+        }).catch(err => console.error(err));
+      }
+    } catch (err) {
+      this.props.history.push('/error');
     }
   }
   handleRunCode = (code: string) => {

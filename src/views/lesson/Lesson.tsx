@@ -139,31 +139,35 @@ class LessonPage extends React.Component<RouteComponentProps, IState> {
     }
   }
   componentDidMount() {
-    const { uri } = this.props.match.params as {uri: string};
-    if (!!uri) {
-      this.uri = Base64.decode(uri as string);
-      this.getLesson(this.uri).then(lesson => {
-        if (!!lesson) {
-          this.setState({ 
-            title: (lesson as Lesson).title,
-            codeQuestionUri: (lesson as Lesson).codeQuestionUri });
-        }
-        return (lesson as Lesson).mediaUri;
-      }).then(mediaUri => {
-        if (!!mediaUri && mediaUri !== 'null') {
-          return this.getMediaMaterial(mediaUri)
-        }
-      }).then(filename => {
-        if (!!filename) {
-          this.setState({ mediaFilename: filename });
-        }
-      }).catch(err => console.error(err));
-
-      this.getSectionList(this.uri).then(list => {
-        this.setState({ sectionList: list });
-      }).catch(err => console.error(err));
+    try {
+      const { uri } = this.props.match.params as {uri: string};
+      if (!!uri) {
+        this.uri = Base64.decode(uri as string);
+        this.getLesson(this.uri).then(lesson => {
+          if (!!lesson) {
+            this.setState({ 
+              title: (lesson as Lesson).title,
+              codeQuestionUri: (lesson as Lesson).codeQuestionUri });
+          }
+          return (lesson as Lesson).mediaUri;
+        }).then(mediaUri => {
+          if (!!mediaUri && mediaUri !== 'null') {
+            return this.getMediaMaterial(mediaUri)
+          }
+        }).then(filename => {
+          if (!!filename) {
+            this.setState({ mediaFilename: filename });
+          }
+        }).catch(err => console.error(err));
+  
+        this.getSectionList(this.uri).then(list => {
+          this.setState({ sectionList: list });
+        }).catch(err => console.error(err));
+      }
+      setTimeout(() => this.setState({skeleton: false}), 800);
+    } catch (err) {
+      this.props.history.push('/error');
     }
-    setTimeout(() => this.setState({skeleton: false}), 800);
   }
   // 打卡
   handlePunchInClick = (codeQuestionUri: string = '') => {

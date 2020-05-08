@@ -24,6 +24,7 @@ const Signup    = loadComponent('./signup/Signup');
 const Code      = loadComponent('./code/Code');
 const UserState = loadComponent('./user-state/UserState');
 const About     = loadComponent('./about/About');
+const ErrorPage = loadComponent('./error/Error');
 
 interface IAPPProps {
   id: string,
@@ -125,10 +126,10 @@ class App extends React.Component<IAPPProps, IAPPState> {
               <Route path="/record"><Record /></Route>
               <Route path="/course/:uri" component={ Course } />
               <Route path="/lesson/:uri" component={ Lesson } />
-              <Route path="/code/:uri" component={ Code }></Route>
-              <Route path="/user-state" component={ UserState }></Route>
-              <Route path="/about" component={ About }></Route>
-              <Route path="/error"><div>404 Oops...</div></Route>
+              <Route path="/code/:uri" component={ Code } />
+              <Route path="/user-state" component={ UserState } />
+              <Route path="/about" component={ About } />
+              <Route path="/error" component={ ErrorPage } />
               <Route path="*"><Redirect to="/error" /></Route>
             </Switch>
           </main>
