@@ -53,6 +53,7 @@ class Recommend extends React.Component<IProps> {
         { (showNoneRecommend)
           ? (<h2 style={{textAlign: 'center'}}>您的学习状态已达标，没有需要推荐学习的课时了</h2>) : null
         }
+        <Link to="/user-state">>> 查看我的学习状态</Link>
       </Fragment>
     )
   }

@@ -131,10 +131,18 @@ class UserState extends React.Component<RouteComponentProps, IState> {
         node.style = {};
       }
       switch (node.cluster) {
-        case 'grasp': 
+        case 'grasp:1': 
           node.style.fill = '#BDD2FD';
           node.style.stroke = '#5B8FF9';
         break;
+        case 'grasp:2':
+          node.style.fill = '#fddfbd';
+          node.style.stroke = '#f98b5b';
+          break;
+        case 'grasp:3':
+          node.style.fill = '#c4ffd5';
+          node.style.stroke = '#54ef9d';
+          break;
         case 'none': 
           node.style.fill = '#c2c8d5';
           node.style.stroke = '#5D7092';
@@ -165,6 +173,15 @@ class UserState extends React.Component<RouteComponentProps, IState> {
               {menuItemUI}
             </Menu>
           </Popover>
+          <div style={{marginTop: '15px'}}>
+            <strong>说明：</strong>
+            <ol style={{marginTop: '1px'}}>
+              <li>灰色表示<i><strong>未学会或未学习</strong></i> 的知识点（末尾带数字 0 或不带数字）</li>
+              <li>蓝色表示<i><strong>已理解</strong></i> 的知识点（末尾带数字 1）</li>
+              <li>橙色表示<i><strong>状态存疑</strong></i> 的知识点（末尾带数字 2）</li>
+              <li>绿色表示<i><strong>已掌握</strong></i> 的知识点（末尾带数字 3）</li>
+            </ol>
+          </div>
           <div style={{marginTop: '20px'}}>
           <ButtonGroup minimal={true}>
             <Button icon="zoom-in" onClick={() => {

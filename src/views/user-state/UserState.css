@@ -14,3 +14,7 @@ h1 {
   top: 50%;
   transform: translateY(-50%);
 }
+
+ol > li {
+  padding: 2px 0;
+}
