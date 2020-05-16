@@ -90,15 +90,23 @@ class VideoPlayer extends React.Component<IProps, IState> {
   }
   private async getVideoEditorData(videoURL: string) {
     const resp = await blobGet(videoURL);
-    const rawData = await resp.text();
+    const rawData = resp.text !== undefined 
+      ? await resp.text() 
+      : await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsText(resp, 'utf-8');
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => resolve('');
+      });
     let editorData: Array<IEditorFrame> = [];
     if (Array.isArray(rawData)) {
       editorData = rawData;
     } else {
-      editorData = (rawData as string).split('\r\n').map((data: string) => {
+      // 适配不支持 ... 运算符的浏览器   
+      editorData = Array.prototype.concat.apply([], (rawData as string).split('\r\n').map((data: string) => {
         if (data.length > 0) return JSON.parse(data);
         else return [];
-      }).flat(1);
+      }));
     }
     return editorData.sort((former, latter) => (former.index - latter.index));
   }

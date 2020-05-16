@@ -51,7 +51,10 @@ class Recommend extends React.Component<IProps> {
         { this.createRecommendUI('经过分析您的学习状态，推荐您复习课时', reviewList) }
         { this.createRecommendUI('经过分析您的学习状态，推荐您接下来学习课时', recommendList) }
         { (showNoneRecommend)
-          ? (<h2 style={{textAlign: 'center'}}>您的学习状态已达标，没有需要推荐学习的课时了</h2>) : null
+          ? (<>
+          <h2>经过分析您的学习状态，没有需要推荐学习的课时</h2>
+          <p>若您未完成所有课程，可以随机选一个课程继续学习</p>
+          </>) : null
         }
         <Link to="/user-state">>> 查看我的学习状态</Link>
       </Fragment>
